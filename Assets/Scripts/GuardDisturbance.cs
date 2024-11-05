@@ -1,9 +1,9 @@
-using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 public class GuardDisturbance : MonoBehaviour
 {
     public Transform guardsParent, player;
+    public float sinkDisruptionTime = 2;
 
     Transform[] guards;
     PlayerController playerController;
@@ -47,7 +47,7 @@ public class GuardDisturbance : MonoBehaviour
             {
                 case "Sink":
                     Transform guard = GetClosestGuard(disruptionPosition);
-                    guard.GetComponent<GuardController>().Disrupt(disruptionPosition);
+                    guard.GetComponent<GuardController>().Disrupt(disruptionPosition, sinkDisruptionTime);
                     break;
 
                 default:

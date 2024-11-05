@@ -13,11 +13,14 @@ public class GuardController : MonoBehaviour
     public Transform bodyTransform;
     public WaypointMode waypointMode;
     public float waypointTolerance = 0.2f;
+    public float waypointTime = 0.5f;
+    public float rotationSpeed = 5;
 
     Transform[] waypoints;
     NavMeshAgent agent;
     int waypointIndex = 0;
     int waypointDirection = 1;
+    float currentWaypointTime = 0;
     bool disrupted = false;
 
     private void Start()
@@ -35,57 +38,69 @@ public class GuardController : MonoBehaviour
 
     private void Update()
     {
+        // move to next waypoint if enough time has passed
         if (agent.remainingDistance < agent.radius + waypointTolerance)
         {
-            disrupted = false;
-
-            // next waypoint
-            switch (waypointMode)
+            if (currentWaypointTime == 0)
             {
-                case WaypointMode.Circular:
-                    if (waypointIndex == waypoints.Length - 1)
-                    {
-                        // wrap back around
-                        waypointIndex = 0;
-                    }
-                    else waypointIndex++;
-                    break;
-
-                case WaypointMode.BackAndForth:
-                    if (waypointDirection == 1)
-                    {
-                        if (waypointIndex == waypoints.Length - 1)
-                        {
-                            waypointDirection = -1;
-                        }
-                    }
-                    else
-                    {
-                        if (waypointIndex == 0)
-                        {
-                            waypointDirection = 1;
-                        }
-                    }
-
-                    waypointIndex += waypointDirection;
-                    break;
-
-                default:
-                    break;
+                MoveToNextWaypoint();
+            }
+            else
+            {
+                currentWaypointTime = Mathf.Max(0, currentWaypointTime - Time.deltaTime);
             }
         }
 
-        if (!disrupted)
-        {
-            agent.SetDestination(waypoints[waypointIndex].position);
-        }
-
-        agent.velocity.SetAngleBasedOnVelocity(ref bodyTransform);
+        agent.velocity.SetAngleBasedOnVelocity(ref bodyTransform, rotationSpeed);
     }
 
-    public void Disrupt(Vector3 disruptionPosition)
+    private void MoveToNextWaypoint()
+    {
+        disrupted = false;
+
+        // next waypoint
+        switch (waypointMode)
+        {
+            case WaypointMode.Circular:
+                if (waypointIndex == waypoints.Length - 1)
+                {
+                    // wrap back around
+                    waypointIndex = 0;
+                }
+                else waypointIndex++;
+                break;
+
+            case WaypointMode.BackAndForth:
+                if (waypointDirection == 1)
+                {
+                    if (waypointIndex == waypoints.Length - 1)
+                    {
+                        waypointDirection = -1;
+                    }
+                }
+                else
+                {
+                    if (waypointIndex == 0)
+                    {
+                        waypointDirection = 1;
+                    }
+                }
+
+                waypointIndex += waypointDirection;
+                break;
+
+            default:
+                break;
+        }
+
+        currentWaypointTime = waypointTime;
+        agent.SetDestination(waypoints[waypointIndex].position);
+    }
+
+    public void Disrupt(Vector3 disruptionPosition, float disruptionTime)
     {
         agent.SetDestination(disruptionPosition);
         disrupted = true;
+        currentWaypointTime = disruptionTime;
     }
 }
