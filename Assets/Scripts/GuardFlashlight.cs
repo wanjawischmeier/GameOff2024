@@ -12,6 +12,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     {
         if ((player.position - guardController.transform.position).magnitude <= detectionDistance)
         {
+            // player is just too close and guard notices without looking
             GameOver();
         }
     }
