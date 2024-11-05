@@ -6,9 +6,10 @@ public abstract class InteractableObject : MonoBehaviour
 
     public virtual string interactionMessage { get; } = "interact with this object";
 
-    public abstract void Interact();
+    public abstract void Interact(Transform interactionOverlayParent);
 
     public Transform guardsParent, player;
+    public InteractionManager interactionManager;
     Transform[] guards;
     PlayerController playerController;
 
@@ -23,10 +24,23 @@ public abstract class InteractableObject : MonoBehaviour
         playerController = player.GetComponent<PlayerController>();
     }
 
-    public void DisruptGuard(float interactionTime)
+    public void DisruptGuard(float interactionTime, GameObject overlay, Transform interactionOverlayParent)
     {
         Transform guard = GetClosestGuard(transform.position);
+        if (guard == null)
+        {
+            return;
+        }
+
+        RemoveInteractable();
+        Instantiate(overlay, interactionOverlayParent);
         guard.GetComponent<GuardController>().Disrupt(transform.position, interactionTime);
+    }
+
+    public void RemoveInteractable()
+    {
+        interactionManager.RemoveInteractable(this);
+        Destroy(gameObject);
     }
 
     public Transform GetClosestGuard(Vector3 position)

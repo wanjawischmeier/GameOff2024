@@ -4,27 +4,25 @@ using UnityEngine;
 
 public class InteractionManager : MonoBehaviour
 {
-    public Transform player;
+    public Transform player, interactionOverlayParent;
     public GameObject interactionInfoPanel;
     public TextMeshProUGUI interactionInfoText;
 
-    InteractableObject[] interactableObjects;
+    List<InteractableObject> interactableObjects;
 
-    void Start()
+    private void Start()
     {
-        var interactableObjectsList = new List<InteractableObject>();
+        interactableObjects = new List<InteractableObject>();
         for (int i = 0; i < transform.childCount; i++)
         {
             var obj = transform.GetChild(i).GetComponent<InteractableObject>();
             if (obj == null) continue;
 
-            interactableObjectsList.Add(obj);
+            interactableObjects.Add(obj);
         }
-
-        interactableObjects = interactableObjectsList.ToArray();
     }
 
-    void Update()
+    private void Update()
     {
         float closestDistance = -1;
         InteractableObject closestObject = null;
@@ -60,7 +58,12 @@ public class InteractionManager : MonoBehaviour
         // trigger interaction when pressing f
         if (Input.GetKeyDown(KeyCode.F))
         {
-            closestObject.Interact();
+            closestObject.Interact(interactionOverlayParent);
         }
+    }
+
+    public void RemoveInteractable(InteractableObject interactable)
+    {
+        interactableObjects.Remove(interactable);
     }
 }

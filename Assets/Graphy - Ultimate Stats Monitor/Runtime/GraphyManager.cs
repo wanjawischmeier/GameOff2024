@@ -794,13 +794,13 @@ namespace Tayx.Graphy
 
             m_fpsManager.SetPosition( m_graphModulePosition, m_graphModuleOffset );
             m_ramManager.SetPosition( m_graphModulePosition, m_graphModuleOffset );
-            m_audioManager.SetPosition( m_graphModulePosition, m_graphModuleOffset );
-            m_advancedData.SetPosition( m_advancedModulePosition, m_advancedModuleOffset );
+            // m_audioManager.SetPosition( m_graphModulePosition, m_graphModuleOffset );
+            // m_advancedData.SetPosition( m_advancedModulePosition, m_advancedModuleOffset );
 
             m_fpsManager.SetState( m_fpsModuleState );
             m_ramManager.SetState( m_ramModuleState );
-            m_audioManager.SetState( m_audioModuleState );
-            m_advancedData.SetState( m_advancedModuleState );
+            // m_audioManager.SetState( m_audioModuleState );
+            // m_advancedData.SetState( m_advancedModuleState );
 
             if( !m_enableOnStartup )
             {
