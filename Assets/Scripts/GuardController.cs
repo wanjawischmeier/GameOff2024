@@ -11,9 +11,12 @@ public class GuardController : MonoBehaviour
 
     public Transform route;
     public Transform bodyTransform;
+    public PolygonCollider2D flashlightConeCollider;
     public WaypointMode waypointMode;
     public float waypointTolerance = 0.2f;
     public float waypointTime = 0.5f;
+    public float moveSpeed = 1;
+    public float sprintSpeed = 2;
     public float rotationSpeed = 5;
 
     Transform[] waypoints;
@@ -21,7 +24,6 @@ public class GuardController : MonoBehaviour
     int waypointIndex = 0;
     int waypointDirection = 1;
     float currentWaypointTime = 0;
-    bool disrupted = false;
 
     private void Start()
     {
@@ -56,8 +58,6 @@ public class GuardController : MonoBehaviour
 
     private void MoveToNextWaypoint()
     {
-        disrupted = false;
-
         // next waypoint
         switch (waypointMode)
         {
@@ -94,13 +94,14 @@ public class GuardController : MonoBehaviour
         }
 
         currentWaypointTime = waypointTime;
+        agent.speed = moveSpeed;
         agent.SetDestination(waypoints[waypointIndex].position);
     }
 
     public void Disrupt(Vector3 disruptionPosition, float disruptionTime)
     {
         agent.SetDestination(disruptionPosition);
-        disrupted = true;
         currentWaypointTime = disruptionTime;
+        agent.speed = sprintSpeed;
     }
 }

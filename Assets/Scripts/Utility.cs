@@ -12,4 +12,9 @@ public static class Utility
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
     }
+
+    public static Vector2 StripZ(this Vector3 vector)
+    {
+        return new Vector2(vector.x, vector.y);
+    }
 }
