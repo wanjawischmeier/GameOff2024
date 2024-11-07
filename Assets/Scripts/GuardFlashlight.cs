@@ -3,14 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class NewMonoBehaviourScript : MonoBehaviour
 {
-    public Transform player, flashlightBody;
+    public Transform flashlightBody;
     public GuardController guardController;
     public LayerMask playerLayerMask;
     public float detectionDistance = 0.5f;
 
     private void FixedUpdate()
     {
-        if ((player.position - guardController.transform.position).magnitude <= detectionDistance)
+        if ((PlayerController.Transform.position - guardController.transform.position).magnitude <= detectionDistance)
         {
             // player is just too close and guard notices without looking
             GameOver();
@@ -21,7 +21,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     {
         // the player is inside the guard's cone of vision
         Vector2 origin = flashlightBody.transform.position.StripZ();
-        Vector3 rayDirection = player.position.StripZ() - origin;
+        Vector3 rayDirection = PlayerController.Transform.position.StripZ() - origin;
 
         if (Physics2D.Raycast(origin, rayDirection, rayDirection.magnitude, playerLayerMask))
         {

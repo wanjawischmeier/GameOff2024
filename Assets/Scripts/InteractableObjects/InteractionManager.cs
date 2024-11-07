@@ -1,21 +1,38 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerController))]
 public class InteractionManager : MonoBehaviour
 {
-    public Transform player, interactionOverlayParent;
+    public Transform interactionTriggerParent, interactionOverlayParent;
     public GameObject interactionInfoPanel;
     public TextMeshProUGUI interactionInfoText;
 
+    public static InteractionManager Instance { get; private set; }
+
     List<InteractableObject> interactableObjects;
+
+    private void Awake()
+    {
+        // initialize singleton
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     private void Start()
     {
         interactableObjects = new List<InteractableObject>();
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < interactionTriggerParent.childCount; i++)
         {
-            var obj = transform.GetChild(i).GetComponent<InteractableObject>();
+            var obj = interactionTriggerParent.GetChild(i).GetComponent<InteractableObject>();
             if (obj == null) continue;
 
             interactableObjects.Add(obj);
@@ -30,7 +47,7 @@ public class InteractionManager : MonoBehaviour
         // TODO: might cause lag, put off in coroutine
         foreach (var obj in interactableObjects)
         {
-            float distance = (obj.transform.position - player.position).magnitude;
+            float distance = (obj.transform.position - transform.position).magnitude;
 
             if (distance <= obj.interactionRadius && (distance < closestDistance || closestDistance == -1))
             {
@@ -58,6 +75,7 @@ public class InteractionManager : MonoBehaviour
         // trigger interaction when pressing f
         if (Input.GetKeyDown(KeyCode.F))
         {
+            PlayerController.Instance.Interact();
             closestObject.Interact(interactionOverlayParent);
         }
     }

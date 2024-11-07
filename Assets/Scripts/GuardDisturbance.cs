@@ -6,7 +6,6 @@ public class GuardDisturbance : MonoBehaviour
     public float sinkDisruptionTime = 2;
 
     Transform[] guards;
-    PlayerController playerController;
 
     private void Start()
     {
@@ -15,8 +14,6 @@ public class GuardDisturbance : MonoBehaviour
         {
             guards[childIndex] = guardsParent.GetChild(childIndex);
         }
-
-        playerController = player.GetComponent<PlayerController>();
     }
 
     private void Update()
@@ -38,7 +35,7 @@ public class GuardDisturbance : MonoBehaviour
         {
             // skip clicks outside the player's interaction range
             Vector3 disruptionPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if ((disruptionPosition - player.position).magnitude > playerController.interactionRadius)
+            if ((disruptionPosition - player.position).magnitude > PlayerController.Instance.interactionRadius)
             {
                 return;
             }

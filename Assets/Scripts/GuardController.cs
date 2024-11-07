@@ -20,11 +20,18 @@ public class GuardController : MonoBehaviour
     public float sprintSpeed = 2;
     public float rotationSpeed = 5;
 
+    public static Transform BodyTransform { get; private set; }
+
     Transform[] waypoints;
     NavMeshAgent agent;
     int waypointIndex = 0;
     int waypointDirection = 1;
     float currentWaypointTime = 0;
+
+    private void Awake()
+    {
+        BodyTransform = transform.parent;
+    }
 
     private void Start()
     {

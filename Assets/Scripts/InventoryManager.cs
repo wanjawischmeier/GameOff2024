@@ -9,9 +9,24 @@ public class InventoryManager : MonoBehaviour
     public Color defaultColor, selectedColor;
     public float selectedScaleFactor = 1.1f;
 
+    public static InventoryManager Instance { get; private set; }
+
     Transform[] slots;
     int selectedSlot = 0;
     int items = 0;
+
+    private void Awake()
+    {
+        // initialize singleton
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     private void Start()
     {

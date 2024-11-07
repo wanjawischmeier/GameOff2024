@@ -8,20 +8,15 @@ public abstract class InteractableObject : MonoBehaviour
 
     public abstract void Interact(Transform interactionOverlayParent);
 
-    public Transform guardsParent, player;
-    public InteractionManager interactionManager;
     Transform[] guards;
-    PlayerController playerController;
 
     private void Start()
     {
-        guards = new Transform[guardsParent.childCount];
+        guards = new Transform[GuardController.BodyTransform.childCount];
         for (int childIndex = 0; childIndex < guards.Length; childIndex++)
         {
-            guards[childIndex] = guardsParent.GetChild(childIndex);
+            guards[childIndex] = GuardController.BodyTransform.GetChild(childIndex);
         }
-
-        playerController = player.GetComponent<PlayerController>();
     }
 
     public void DisruptGuard(float interactionTime, GameObject overlay, Transform interactionOverlayParent)
@@ -34,12 +29,14 @@ public abstract class InteractableObject : MonoBehaviour
 
         RemoveInteractable();
         Instantiate(overlay, interactionOverlayParent);
-        guard.GetComponent<GuardController>().Disrupt(transform.position, interactionTime);
+
+        var guardController = guard.GetComponent<GuardController>();
+        guardController.Disrupt(transform.position, interactionTime);
     }
 
     public void RemoveInteractable()
     {
-        interactionManager.RemoveInteractable(this);
+        InteractionManager.Instance.RemoveInteractable(this);
         Destroy(gameObject);
     }
 

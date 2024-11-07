@@ -7,12 +7,11 @@ public class DocumentTrigger : InteractableObject
     public override string interactionMessage { get; } = "pick up the document";
 
     public GameObject preFab;
-    public InventoryManager inventoryManager;
     public string documentName;
 
     public override void Interact(Transform interactionOverlayParent)
     {
-        if (inventoryManager.AddItem(preFab, documentName))
+        if (InventoryManager.Instance.AddItem(preFab, documentName))
         {
             RemoveInteractable();
         }
