@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,9 +15,10 @@ public class InventoryManager : MonoBehaviour
     public struct InventorySlot
     {
         public int count;
-        public string name;
+        public Item item;
     }
 
+    public GameObject itemTriggerPrefab;
     public Transform content;
     public TextMeshProUGUI itemName;
     public Color defaultColor, selectedColor;
@@ -24,31 +26,26 @@ public class InventoryManager : MonoBehaviour
 
     public static InventoryManager Instance { get; private set; }
 
+    public Item selectedItem { get => slots[selectedSlot].item; }
+
     public InventoryState inventoryState
     {
         get
         {
-            var slotStates = new InventorySlot[slotTransforms.Length];
-            for (int i = 0; i < slotTransforms.Length; i++)
-            {
-                if (slots.ContainsKey(i))
-                {
-                    slotStates[i] = slots[i];
-                }
-            }
-
             return new InventoryState()
             {
                 selectedSlot = selectedSlot,
-                slots = slotStates
+                slots = slots.Values.ToArrayPooled()
             };
         }
     }
 
-    Transform[] slotTransforms;
     Dictionary<int, InventorySlot> slots;
+    Transform[] slotTransforms;
     int selectedSlot = 0;
-    int items = 0;
+
+    const float itemDropPositionSpread = 0.1f;
+    const float itemDropRotationSpread = 10;
 
     private void Awake()
     {
@@ -65,10 +62,17 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
-        slots = new Dictionary<int, InventorySlot>();
+        slots = new Dictionary<int, InventorySlot>(content.childCount);
         slotTransforms = new Transform[content.childCount];
-        for (int i = 0; i < slotTransforms.Length; i++)
+
+        for (int i = 0; i < content.childCount; i++)
         {
+            slots[i] = new InventorySlot()
+            {
+                count = -1,
+                item = null
+            };
+
             slotTransforms[i] = content.GetChild(i);
         }
 
@@ -84,7 +88,7 @@ public class InventoryManager : MonoBehaviour
                 // number keycode
                 KeyCode key = KeyCode.Alpha0 + i;
 
-                if (Input.GetKeyDown(key) && i <= slotTransforms.Length)
+                if (Input.GetKeyDown(key) && i <= slots.Count)
                 {
                     SetSelectedSlot(i - 1);
                 }
@@ -93,14 +97,14 @@ public class InventoryManager : MonoBehaviour
 
         if (Input.mouseScrollDelta.y < 0)
         {
-            SetSelectedSlot((selectedSlot + 1) % slotTransforms.Length);
+            SetSelectedSlot((selectedSlot + 1) % slots.Count);
         }
         else if (Input.mouseScrollDelta.y > 0)
         {
             int item = selectedSlot - 1;
             if (item < 0)
             {
-                item = slotTransforms.Length - 1;
+                item = slots.Count - 1;
             }
 
             SetSelectedSlot(item);
@@ -109,52 +113,160 @@ public class InventoryManager : MonoBehaviour
 
     private void SetSelectedSlot(int slotIndex)
     {
-        var slot = slotTransforms[selectedSlot];
-        slot.localScale = Vector3.one;
-        slot.GetComponent<Image>().color = defaultColor;
+        var slotTransform = slotTransforms[selectedSlot];
+        slotTransform.localScale = Vector3.one;
+        slotTransform.GetComponent<Image>().color = defaultColor;
 
         selectedSlot = slotIndex;
-        slot = slotTransforms[selectedSlot];
-        slot.localScale = Vector3.one * selectedScaleFactor;
-        slot.GetComponent<Image>().color = selectedColor;
+        slotTransform = slotTransforms[selectedSlot];
+        slotTransform.localScale = Vector3.one * selectedScaleFactor;
+        slotTransform.GetComponent<Image>().color = selectedColor;
 
-        if (slot.childCount == 0)
+        var slot = slots[selectedSlot];
+        if (slot.item == null)
         {
             itemName.gameObject.SetActive(false);
         }
         else
         {
             itemName.gameObject.SetActive(true);
-            itemName.text = slot.GetChild(0).name;
+            itemName.text = slot.item.name;
         }
     }
 
-    public bool AddItem(GameObject preFab, string name)
+    private Image GetSlotImage(int slotIndex) => slotTransforms[slotIndex].GetChild(0).GetComponent<Image>();
+
+    private Transform GetSlotBubble(int slotIndex) => slotTransforms[selectedSlot].GetChild(1);
+
+    private TextMeshProUGUI GetBubbleText(Transform bubble) => bubble.GetChild(0).GetComponent<TextMeshProUGUI>();
+
+    public void AddItem(Item item)
     {
-        if (items == slotTransforms.Length - 1)
+        int count = 1;
+
+        // if another slot already holds the item, switch to that
+        for (int slotIndex = 0; slotIndex < slots.Count; slotIndex++)
         {
-            // hotbar already full
-            return false;
+            if (slots[slotIndex].item == item)
+            {
+                SetSelectedSlot(slotIndex);
+            }
+        }
+
+        var oldItem = slots[selectedSlot].item;
+        if (oldItem == null)
+        {
+            itemName.gameObject.SetActive(true);
+        }
+        else
+        {
+            // there's already an item in the slot
+            var bubble = GetSlotBubble(selectedSlot);
+
+            if (oldItem == item)
+            {
+                count += slots[selectedSlot].count;
+                bubble.gameObject.SetActive(true);
+                GetBubbleText(bubble).text = count.ToString();
+            }
+            else
+            {
+                bubble.gameObject.SetActive(false);
+                DropItems(selectedSlot, true);
+            }
         }
 
         var slot = new InventorySlot()
         {
-            count = 1,
-            name = name
+            count = count,
+            item = item
         };
-        slots.Add(items, slot);
+        slots[selectedSlot] = slot;
 
-        var item = Instantiate(preFab, slotTransforms[items]);
-        item.name = name;
-        items++;
+        var slotImage = GetSlotImage(selectedSlot);
+        slotImage.sprite = item.sprite;
+        slotImage.enabled = true;
 
-        if (selectedSlot == items - 1)
+        itemName.text = item.name;
+    }
+
+    public bool RemoveItems(int slotIndex, bool removeAll = false)
+    {
+        if (!slots.ContainsKey(slotIndex))
         {
-            // show the name if this item is selected
-            itemName.gameObject.SetActive(true);
-            itemName.text = name;
+            // no item in the slot
+            return false;
         }
 
+        var bubble = GetSlotBubble(selectedSlot);
+        var slot = slots[slotIndex];
+        if (slot.count == 1 || removeAll)
+        {
+            slot.item = null;
+
+            var slotImage = GetSlotImage(slotIndex);
+            slotImage.sprite = null;
+            slotImage.enabled = false;
+
+            itemName.gameObject.SetActive(false);
+            bubble.gameObject.SetActive(false);
+        }
+        else
+        {
+            slot.count--;
+            GetBubbleText(bubble).text = slot.count.ToString();
+        }
+
+        slots[slotIndex] = slot;
         return true;
+    }
+
+    private void DropItem(InventorySlot slot)
+    {
+        var itemPosition = PlayerController.Transform.position.RandomlySpreadVector(itemDropPositionSpread);
+        var itemRotation = PlayerController.Instance.bodyTransform.eulerAngles.RandomlySpreadVector(itemDropRotationSpread);
+        itemRotation.z += 90;    // rotate item by 90 degrees
+
+        var itemObj = Instantiate(itemTriggerPrefab,
+            itemPosition, Quaternion.Euler(itemRotation),
+            StaticObjects.InteractionTriggerParent
+        );
+        itemObj.name = $"{slot.item.name} Trigger";
+
+        var itemTrigger = itemObj.GetComponent<ItemTrigger>();
+        itemTrigger.item = slot.item;
+
+        var itemRenderer = itemObj.GetComponent<SpriteRenderer>();
+        itemRenderer.sprite = slot.item.sprite;
+
+        InteractionManager.Instance.AddInteractable(itemTrigger);
+    }
+
+    public bool DropItems() => DropItems(selectedSlot);
+
+    public bool DropItems(int slotIndex, bool dropAll = false)
+    {
+        if (slots[slotIndex].item == null)
+        {
+            // no item in the slot
+            return false;
+        }
+
+        // spread items around the player
+        var slot = slots[slotIndex];
+        if (dropAll)
+        {
+            for (int i = 0; i < slot.count; i++)
+            {
+                DropItem(slot);
+            }
+        }
+        else
+        {
+            DropItem(slot);
+        }
+
+        PlayerController.Instance.Interact();
+        return RemoveItems(slotIndex);
     }
 }

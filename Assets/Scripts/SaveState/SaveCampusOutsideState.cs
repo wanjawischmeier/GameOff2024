@@ -38,7 +38,7 @@ public class SaveCampusOutsideState : MonoBehaviour
 
     public static void Save()
     {
-        var guardTransforms = StaticObjectsCampusOutside.Guards;
+        var guardTransforms = StaticObjects.Guards;
         var guards = new GuardState[guardTransforms.Length];
         for (int i = 0; i < guardTransforms.Length; i++)
         {
@@ -81,7 +81,7 @@ public class SaveCampusOutsideState : MonoBehaviour
         PlayerController.Transform.position = campusOutsideState.playerPosition;
         PlayerController.Instance.bodyTransform.eulerAngles = campusOutsideState.playerRotation;
 
-        var guards = StaticObjectsCampusOutside.Guards;
+        var guards = StaticObjects.Guards;
         for (int i = 0; i < guards.Length; i++)
         {
             var guardTransform = guards[i];

@@ -58,6 +58,11 @@ public class PlayerController : MonoBehaviour
 
         Vector3 direction = new Vector3(horizontal, vertical, 0);
         direction.SetAngleBasedOnVelocity(bodyTransform);
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            InventoryManager.Instance.DropItems();
+        }
     }
 
     private void FixedUpdate()

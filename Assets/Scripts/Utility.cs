@@ -34,4 +34,14 @@ public static class Utility
             guard.GetComponent<GuardController>().isStopped = isStopped;
         }
     }
+
+    public static Vector3 RandomlySpreadVector(this Vector3 vector, float spreadFactor)
+    {
+        return new Vector3()
+        {
+            x = vector.x + Random.Range(-spreadFactor, spreadFactor),
+            y = vector.y + Random.Range(-spreadFactor, spreadFactor),
+            z = vector.z + Random.Range(-spreadFactor, spreadFactor),
+        };
+    }
 }

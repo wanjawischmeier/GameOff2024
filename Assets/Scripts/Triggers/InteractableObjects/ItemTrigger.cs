@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class DocumentTrigger : InteractableObject
+public class ItemTrigger : InteractableObject
 {
     public override float interactionRadius { get; } = 1f;
 
-    public override string interactionMessage { get; } = "pick up the document";
+    public override string interactionMessage { get => $"pick up the {item.itemName}"; }
 
     public Item item;
 
