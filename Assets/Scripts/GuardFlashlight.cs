@@ -8,12 +8,16 @@ public class NewMonoBehaviourScript : MonoBehaviour
     public LayerMask playerLayerMask;
     public float detectionDistance = 0.5f;
 
+    // messy due to OnTriggerStay2D
+    bool playerCaught = false;
+
     private void FixedUpdate()
     {
-        if ((PlayerController.Transform.position - guardController.transform.position).magnitude <= detectionDistance)
+        float distance = (PlayerController.Transform.position - guardController.transform.position).magnitude;
+        if (!playerCaught && distance <= detectionDistance)
         {
             // player is just too close and guard notices without looking
-            PlayerCaught();
+            PlayerSeen();
         }
     }
 
@@ -23,17 +27,18 @@ public class NewMonoBehaviourScript : MonoBehaviour
         Vector2 origin = flashlightBody.transform.position.StripZ();
         Vector3 rayDirection = PlayerController.Transform.position.StripZ() - origin;
 
-        if (Physics2D.Raycast(origin, rayDirection, rayDirection.magnitude, playerLayerMask))
+        if (Physics2D.Raycast(origin, rayDirection, rayDirection.magnitude, playerLayerMask) || playerCaught)
         {
             // there's an object occluding the guard's view of the player
             return;
         }
 
         // player has been caught
-        PlayerCaught();
+        playerCaught = true;
+        PlayerSeen();
     }
 
-    private void PlayerCaught()
+    private void PlayerSeen()
     {
         switch (guardController.behaviourMode)
         {

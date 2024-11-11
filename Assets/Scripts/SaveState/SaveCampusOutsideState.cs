@@ -8,7 +8,6 @@ public class SaveCampusOutsideState : MonoBehaviour
         public Vector3 playerPosition, playerRotation;
         public GuardState[] guards;
         public InventoryManager.InventoryState inventoryState;
-        // TODO: handle current guard waypoint
     }
 
     [System.Serializable]

@@ -65,6 +65,7 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
+        slots = new Dictionary<int, InventorySlot>();
         slotTransforms = new Transform[content.childCount];
         for (int i = 0; i < slotTransforms.Length; i++)
         {
