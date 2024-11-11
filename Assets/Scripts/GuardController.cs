@@ -1,6 +1,8 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class GuardController : MonoBehaviour
@@ -10,23 +12,47 @@ public class GuardController : MonoBehaviour
         Circular, BackAndForth
     }
 
+    public enum BehaviourMode
+    {
+        GameOver, Pursue
+    }
+
     public Transform route;
     public Transform bodyTransform;
     public PolygonCollider2D flashlightConeCollider;
     public WaypointMode waypointMode;
+    public BehaviourMode behaviourMode = BehaviourMode.GameOver;
     public float waypointTolerance = 0.2f;
     public float waypointTime = 0.5f;
     public float moveSpeed = 1;
     public float sprintSpeed = 2;
     public float rotationSpeed = 5;
+    public float pursuitCatchDistance = 2;
+
+    public bool isStopped
+    { 
+        get => agent.isStopped;
+        set
+        {
+            agent.velocity = Vector3.zero;
+            agent.isStopped = value;
+        }
+    }
 
     public static Transform BodyTransform { get; private set; }
 
     Transform[] waypoints;
-    NavMeshAgent agent;
-    int waypointIndex = 0;
-    int waypointDirection = 1;
-    float currentWaypointTime = 0;
+
+    [HideInInspector]
+    public NavMeshAgent agent;
+    [HideInInspector]
+    public int waypointIndex = 0;
+    [HideInInspector]
+    public int waypointDirection = 1;
+    [HideInInspector]
+    public float currentWaypointTime = 0;
+
+    const float pursuitTargetUpdateTime = 0.01f;
 
     private void Awake()
     {
@@ -61,7 +87,7 @@ public class GuardController : MonoBehaviour
             }
         }
 
-        agent.velocity.SetAngleBasedOnVelocity(ref bodyTransform, rotationSpeed);
+        agent.velocity.SetAngleBasedOnVelocity(bodyTransform, rotationSpeed);
     }
 
     private void MoveToNextWaypoint()
@@ -100,7 +126,7 @@ public class GuardController : MonoBehaviour
             default:
                 break;
         }
-
+        
         currentWaypointTime = waypointTime;
         agent.speed = moveSpeed;
         agent.SetDestination(waypoints[waypointIndex].position);
@@ -111,5 +137,22 @@ public class GuardController : MonoBehaviour
         agent.SetDestination(disruptionPosition);
         currentWaypointTime = disruptionTime;
         agent.speed = sprintSpeed;
+    }
+
+    public IEnumerator PursuePlayer()
+    {
+        agent.speed = sprintSpeed;
+        rotationSpeed = -1;
+
+        Transform target = PlayerController.Transform;
+
+        while ((transform.position - target.position).magnitude > pursuitCatchDistance)
+        {
+            agent.SetDestination(target.position);
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        // player has been caught
+        SceneManager.LoadSceneAsync(0);
     }
 }

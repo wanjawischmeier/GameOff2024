@@ -165,11 +165,13 @@ MonoBehaviour:
   bodyTransform: {fileID: 4134679691546206306}
   flashlightConeCollider: {fileID: 8519972666944778323}
   waypointMode: 0
+  behaviourMode: 0
   waypointTolerance: 0.5
   waypointTime: 2
   moveSpeed: 1
   sprintSpeed: 2
   rotationSpeed: 4
+  pursuitCatchDistance: 1
 --- !u!195 &1476864978354659937
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -181,7 +183,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 1
-  m_Acceleration: 2
+  m_Acceleration: 3.5
   avoidancePriority: 50
   m_AngularSpeed: 10
   m_StoppingDistance: 0
@@ -539,7 +541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be2be017ffa568e4bb4d2e9898040736, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
   flashlightBody: {fileID: 8896933921337539695}
   guardController: {fileID: 7958299028419165654}
   playerLayerMask:

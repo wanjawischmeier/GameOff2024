@@ -1054,16 +1054,16 @@ namespace Tayx.Graphy
         {
             m_fpsManager.UpdateParameters();
             m_ramManager.UpdateParameters();
-            m_audioManager.UpdateParameters();
-            m_advancedData.UpdateParameters();
+            // m_audioManager.UpdateParameters();
+            // m_advancedData.UpdateParameters();
         }
 
         private void RefreshAllParameters()
         {
             m_fpsManager.RefreshParameters();
             m_ramManager.RefreshParameters();
-            m_audioManager.RefreshParameters();
-            m_advancedData.RefreshParameters();
+            // m_audioManager.RefreshParameters();
+            // m_advancedData.RefreshParameters();
         }
 
         #endregion

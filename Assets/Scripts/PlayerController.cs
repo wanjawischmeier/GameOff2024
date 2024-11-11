@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 // based on: https://stuartspixelgames.com/2018/06/24/simple-2d-top-down-movement-unity-c/
@@ -8,6 +9,9 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
     public float runSpeed = 20.0f;
     public float interactionRadius = 2;
+
+    [DoNotSerialize]
+    public bool isStopped;
 
     public static Transform Transform { get; private set; }
 
@@ -46,16 +50,24 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (isStopped) return;
+
         // Gives a value between -1 and 1
         horizontal = Input.GetAxisRaw("Horizontal"); // -1 is left
         vertical = Input.GetAxisRaw("Vertical"); // -1 is down
 
         Vector3 direction = new Vector3(horizontal, vertical, 0);
-        direction.SetAngleBasedOnVelocity(ref bodyTransform);
+        direction.SetAngleBasedOnVelocity(bodyTransform);
     }
 
     private void FixedUpdate()
     {
+        if (isStopped)
+        {
+            body.linearVelocity = Vector3.zero;
+            return;
+        }
+
         if (horizontal == 0 && vertical == 0) // no player movement
         {
             animator.SetBool(animatorWalkingBoolId, false);

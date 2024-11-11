@@ -13,7 +13,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         if ((PlayerController.Transform.position - guardController.transform.position).magnitude <= detectionDistance)
         {
             // player is just too close and guard notices without looking
-            GameOver();
+            PlayerCaught();
         }
     }
 
@@ -30,11 +30,22 @@ public class NewMonoBehaviourScript : MonoBehaviour
         }
 
         // player has been caught
-        GameOver();
+        PlayerCaught();
     }
 
-    private void GameOver()
+    private void PlayerCaught()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        switch (guardController.behaviourMode)
+        {
+            case GuardController.BehaviourMode.GameOver:
+                SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+                break;
+            case GuardController.BehaviourMode.Pursue:
+                StartCoroutine(guardController.PursuePlayer());
+                break;
+            default:
+                break;
+        }
+
     }
 }

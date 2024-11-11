@@ -1,9 +1,22 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
+    public struct InventoryState
+    {
+        public int selectedSlot;
+        public InventorySlot[] slots;
+    }
+
+    public struct InventorySlot
+    {
+        public int count;
+        public string name;
+    }
+
     public Transform content;
     public TextMeshProUGUI itemName;
     public Color defaultColor, selectedColor;
@@ -11,7 +24,29 @@ public class InventoryManager : MonoBehaviour
 
     public static InventoryManager Instance { get; private set; }
 
-    Transform[] slots;
+    public InventoryState inventoryState
+    {
+        get
+        {
+            var slotStates = new InventorySlot[slotTransforms.Length];
+            for (int i = 0; i < slotTransforms.Length; i++)
+            {
+                if (slots.ContainsKey(i))
+                {
+                    slotStates[i] = slots[i];
+                }
+            }
+
+            return new InventoryState()
+            {
+                selectedSlot = selectedSlot,
+                slots = slotStates
+            };
+        }
+    }
+
+    Transform[] slotTransforms;
+    Dictionary<int, InventorySlot> slots;
     int selectedSlot = 0;
     int items = 0;
 
@@ -30,10 +65,10 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
-        slots = new Transform[content.childCount];
-        for (int i = 0; i < slots.Length; i++)
+        slotTransforms = new Transform[content.childCount];
+        for (int i = 0; i < slotTransforms.Length; i++)
         {
-            slots[i] = content.GetChild(i);
+            slotTransforms[i] = content.GetChild(i);
         }
 
         SetSelectedSlot(0);
@@ -48,7 +83,7 @@ public class InventoryManager : MonoBehaviour
                 // number keycode
                 KeyCode key = KeyCode.Alpha0 + i;
 
-                if (Input.GetKeyDown(key) && i <= slots.Length)
+                if (Input.GetKeyDown(key) && i <= slotTransforms.Length)
                 {
                     SetSelectedSlot(i - 1);
                 }
@@ -57,14 +92,14 @@ public class InventoryManager : MonoBehaviour
 
         if (Input.mouseScrollDelta.y < 0)
         {
-            SetSelectedSlot((selectedSlot + 1) % slots.Length);
+            SetSelectedSlot((selectedSlot + 1) % slotTransforms.Length);
         }
         else if (Input.mouseScrollDelta.y > 0)
         {
             int item = selectedSlot - 1;
             if (item < 0)
             {
-                item = slots.Length - 1;
+                item = slotTransforms.Length - 1;
             }
 
             SetSelectedSlot(item);
@@ -73,12 +108,12 @@ public class InventoryManager : MonoBehaviour
 
     private void SetSelectedSlot(int slotIndex)
     {
-        var slot = slots[selectedSlot];
+        var slot = slotTransforms[selectedSlot];
         slot.localScale = Vector3.one;
         slot.GetComponent<Image>().color = defaultColor;
 
         selectedSlot = slotIndex;
-        slot = slots[selectedSlot];
+        slot = slotTransforms[selectedSlot];
         slot.localScale = Vector3.one * selectedScaleFactor;
         slot.GetComponent<Image>().color = selectedColor;
 
@@ -95,13 +130,20 @@ public class InventoryManager : MonoBehaviour
 
     public bool AddItem(GameObject preFab, string name)
     {
-        if (items == slots.Length - 1)
+        if (items == slotTransforms.Length - 1)
         {
             // hotbar already full
             return false;
         }
 
-        var item = Instantiate(preFab, slots[items]);
+        var slot = new InventorySlot()
+        {
+            count = 1,
+            name = name
+        };
+        slots.Add(items, slot);
+
+        var item = Instantiate(preFab, slotTransforms[items]);
         item.name = name;
         items++;
 

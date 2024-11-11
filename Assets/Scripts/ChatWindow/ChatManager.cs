@@ -6,7 +6,6 @@ public class ChatManager : MonoBehaviour
     public GameObject messagePlayerPrefab, messageGameCharacterPrefab;
     public Transform chatScrollViewContent;
     public ScrollRect chatScrollRect;
-    public float x;
 
     const float chatScrollDownThreshold = 0.1f;
 
@@ -17,7 +16,7 @@ public class ChatManager : MonoBehaviour
 
     private void Update()
     {
-        x = chatScrollRect.verticalNormalizedPosition;
+
     }
 
     public void SendMessage()
@@ -31,6 +30,7 @@ public class ChatManager : MonoBehaviour
         }
     }
 
+    // grabbed from: https://stackoverflow.com/a/55148117
     /// <summary>
     /// Forces the layout of a UI GameObject and all of it's children to update
     /// their positions and sizes.

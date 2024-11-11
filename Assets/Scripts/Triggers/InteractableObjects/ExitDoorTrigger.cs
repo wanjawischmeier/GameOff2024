@@ -7,9 +7,11 @@ public class ExitDoorTrigger : InteractableObject
 
     public override string interactionMessage { get; } = "open the door and escape";
 
+    public int targetSceneBuildIndex;
+
     public override void Interact(Transform interactionOverlayParent)
     {
         Debug.Log("Exiting Level");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(targetSceneBuildIndex);
     }
 }
