@@ -1,21 +1,26 @@
-using System.Collections.Generic;
+using System.IO;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
+    [System.Serializable]
     public struct InventoryState
     {
         public int selectedSlot;
         public InventorySlot[] slots;
     }
 
+    [System.Serializable]
     public struct InventorySlot
     {
-        public int count;
-        public Item item;
+        public int count, itemId;
+
+        public Item item
+        {
+            get => ItemDatabase.GetItem(itemId);
+        }
     }
 
     public GameObject itemTriggerPrefab;
@@ -35,12 +40,26 @@ public class InventoryManager : MonoBehaviour
             return new InventoryState()
             {
                 selectedSlot = selectedSlot,
-                slots = slots.Values.ToArrayPooled()
+                slots = slots
             };
+        }
+
+        set
+        {
+            selectedSlot = value.selectedSlot;
+            foreach (var slot in value.slots)
+            {
+                AddItem(slot.itemId, slot.count);
+            }
         }
     }
 
-    Dictionary<int, InventorySlot> slots;
+    string saveFilePath
+    {
+        get => Path.Combine(Application.persistentDataPath + "inventory.save");
+    }
+
+    InventorySlot[] slots;
     Transform[] slotTransforms;
     int selectedSlot = 0;
 
@@ -58,11 +77,8 @@ public class InventoryManager : MonoBehaviour
         {
             Instance = this;
         }
-    }
 
-    private void Start()
-    {
-        slots = new Dictionary<int, InventorySlot>(content.childCount);
+        slots = new InventorySlot[content.childCount];
         slotTransforms = new Transform[content.childCount];
 
         for (int i = 0; i < content.childCount; i++)
@@ -70,12 +86,15 @@ public class InventoryManager : MonoBehaviour
             slots[i] = new InventorySlot()
             {
                 count = -1,
-                item = null
+                itemId = -1
             };
 
             slotTransforms[i] = content.GetChild(i);
         }
+    }
 
+    private void Start()
+    {
         SetSelectedSlot(0);
     }
 
@@ -88,7 +107,7 @@ public class InventoryManager : MonoBehaviour
                 // number keycode
                 KeyCode key = KeyCode.Alpha0 + i;
 
-                if (Input.GetKeyDown(key) && i <= slots.Count)
+                if (Input.GetKeyDown(key) && i <= slots.Length)
                 {
                     SetSelectedSlot(i - 1);
                 }
@@ -97,17 +116,17 @@ public class InventoryManager : MonoBehaviour
 
         if (Input.mouseScrollDelta.y < 0)
         {
-            SetSelectedSlot((selectedSlot + 1) % slots.Count);
+            SetSelectedSlot((selectedSlot + 1) % slots.Length);
         }
         else if (Input.mouseScrollDelta.y > 0)
         {
-            int item = selectedSlot - 1;
-            if (item < 0)
+            int slotIndex = selectedSlot - 1;
+            if (slotIndex < 0)
             {
-                item = slots.Count - 1;
+                slotIndex = slots.Length - 1;
             }
 
-            SetSelectedSlot(item);
+            SetSelectedSlot(slotIndex);
         }
     }
 
@@ -123,7 +142,7 @@ public class InventoryManager : MonoBehaviour
         slotTransform.GetComponent<Image>().color = selectedColor;
 
         var slot = slots[selectedSlot];
-        if (slot.item == null)
+        if (slot.itemId == -1)
         {
             itemName.gameObject.SetActive(false);
         }
@@ -140,50 +159,60 @@ public class InventoryManager : MonoBehaviour
 
     private TextMeshProUGUI GetBubbleText(Transform bubble) => bubble.GetChild(0).GetComponent<TextMeshProUGUI>();
 
-    public void AddItem(Item item)
+    public void AddItem(Item item) => AddItem(item.itemId);
+
+    public void AddItem(int itemId, int count = 1)
     {
-        int count = 1;
+        if (itemId == -1) return;
+        int totalCount = count;
 
         // if another slot already holds the item, switch to that
-        for (int slotIndex = 0; slotIndex < slots.Count; slotIndex++)
+        for (int slotIndex = 0; slotIndex < slots.Length; slotIndex++)
         {
-            if (slots[slotIndex].item == item)
+            if (slots[slotIndex].itemId == itemId)
             {
                 SetSelectedSlot(slotIndex);
             }
         }
 
-        var oldItem = slots[selectedSlot].item;
-        if (oldItem == null)
+        int oldItemId = slots[selectedSlot].itemId;
+        if (oldItemId == -1)
         {
             itemName.gameObject.SetActive(true);
         }
         else
         {
             // there's already an item in the slot
-            var bubble = GetSlotBubble(selectedSlot);
-
-            if (oldItem == item)
+            if (oldItemId == itemId)
             {
-                count += slots[selectedSlot].count;
-                bubble.gameObject.SetActive(true);
-                GetBubbleText(bubble).text = count.ToString();
+                totalCount += slots[selectedSlot].count;
             }
             else
             {
-                bubble.gameObject.SetActive(false);
-                DropItems(selectedSlot, true);
+                DropItem(selectedSlot, true);
             }
+        }
+
+        var bubble = GetSlotBubble(selectedSlot);
+        if (totalCount > 1)
+        {
+            bubble.gameObject.SetActive(true);
+            GetBubbleText(bubble).text = totalCount.ToString();
+        }
+        else
+        {
+            bubble.gameObject.SetActive(false);
         }
 
         var slot = new InventorySlot()
         {
-            count = count,
-            item = item
+            count = totalCount,
+            itemId = itemId
         };
         slots[selectedSlot] = slot;
 
         var slotImage = GetSlotImage(selectedSlot);
+        var item = ItemDatabase.GetItem(itemId);
         slotImage.sprite = item.sprite;
         slotImage.enabled = true;
 
@@ -192,7 +221,7 @@ public class InventoryManager : MonoBehaviour
 
     public bool RemoveItems(int slotIndex, bool removeAll = false)
     {
-        if (!slots.ContainsKey(slotIndex))
+        if (slots[slotIndex].itemId == -1)
         {
             // no item in the slot
             return false;
@@ -202,7 +231,7 @@ public class InventoryManager : MonoBehaviour
         var slot = slots[slotIndex];
         if (slot.count == 1 || removeAll)
         {
-            slot.item = null;
+            slot.itemId = -1;
 
             var slotImage = GetSlotImage(slotIndex);
             slotImage.sprite = null;
@@ -214,14 +243,23 @@ public class InventoryManager : MonoBehaviour
         else
         {
             slot.count--;
+        }
+
+        if (slot.count == 1)
+        {
+            bubble.gameObject.SetActive(false);
+        }
+        else
+        {
             GetBubbleText(bubble).text = slot.count.ToString();
         }
 
         slots[slotIndex] = slot;
+        SaveSceneState.SaveInventory();
         return true;
     }
 
-    private void DropItem(InventorySlot slot)
+    private void InstantiateDroppedItem(InventorySlot slot)
     {
         var itemPosition = PlayerController.Transform.position.RandomlySpreadVector(itemDropPositionSpread);
         var itemRotation = PlayerController.Instance.bodyTransform.eulerAngles.RandomlySpreadVector(itemDropRotationSpread);
@@ -242,11 +280,11 @@ public class InventoryManager : MonoBehaviour
         InteractionManager.Instance.AddInteractable(itemTrigger);
     }
 
-    public bool DropItems() => DropItems(selectedSlot);
+    public bool DropItem() => DropItem(selectedSlot);
 
-    public bool DropItems(int slotIndex, bool dropAll = false)
+    public bool DropItem(int slotIndex, bool dropAll = false)
     {
-        if (slots[slotIndex].item == null)
+        if (slots[slotIndex].itemId == -1)
         {
             // no item in the slot
             return false;
@@ -258,12 +296,12 @@ public class InventoryManager : MonoBehaviour
         {
             for (int i = 0; i < slot.count; i++)
             {
-                DropItem(slot);
+                InstantiateDroppedItem(slot);
             }
         }
         else
         {
-            DropItem(slot);
+            InstantiateDroppedItem(slot);
         }
 
         PlayerController.Instance.Interact();

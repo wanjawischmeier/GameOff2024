@@ -14,7 +14,7 @@ public class DoorTrigger : InteractableObject
     {
         Debug.Log($"Entering the {houseName}");
 
-        SaveCampusOutsideState.Save();
+        SaveSceneState.SaveScene();
         SceneManager.LoadSceneAsync(targetSceneBuildIndex);
     }
 }
