@@ -30,6 +30,7 @@ public class CollisionTigger : MonoBehaviour
     private void OnPromptConfirmed()
     {
         Debug.Log($"Confirmed prompt to switch scene to {targetSceneBuildIndex}");
-        SceneManager.LoadSceneAsync(targetSceneBuildIndex);
+        SceneStateManager.ResetSceneState();
+        SceneManager.LoadScene(targetSceneBuildIndex);
     }
 }

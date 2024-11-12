@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
@@ -27,17 +28,11 @@ public abstract class InteractableObject : MonoBehaviour
             return;
         }
 
-        RemoveInteractable();
+        Destroy(gameObject);
         Instantiate(overlay, interactionOverlayParent);
 
         var guardController = guard.GetComponent<GuardController>();
         guardController.Disrupt(transform.position, interactionTime);
-    }
-
-    public void RemoveInteractable()
-    {
-        InteractionManager.Instance.RemoveInteractable(this);
-        Destroy(gameObject);
     }
 
     public Transform GetClosestGuard(Vector3 position)

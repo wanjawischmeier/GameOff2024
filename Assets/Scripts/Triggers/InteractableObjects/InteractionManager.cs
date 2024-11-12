@@ -12,7 +12,6 @@ public class InteractionManager : MonoBehaviour
 
     public static InteractionManager Instance { get; private set; }
 
-    List<InteractableObject> interactableObjects;
     InteractableObject preferredObject = null;
 
     const float searchIntervall = 0.1f;
@@ -32,16 +31,6 @@ public class InteractionManager : MonoBehaviour
 
     private void Start()
     {
-        var interactionTriggerParent = StaticObjects.InteractionTriggerParent;
-        interactableObjects = new List<InteractableObject>();
-        for (int i = 0; i < interactionTriggerParent.childCount; i++)
-        {
-            var obj = interactionTriggerParent.GetChild(i).GetComponent<InteractableObject>();
-            if (obj == null) continue;
-
-            interactableObjects.Add(obj);
-        }
-
         StartCoroutine(SearchForInteractableObjects());
     }
 
@@ -57,30 +46,42 @@ public class InteractionManager : MonoBehaviour
 
     private IEnumerator SearchForInteractableObjects()
     {
+        var interactionTriggerParent = StaticObjects.InteractionTriggerParent;
+
         while (true)
         {
             float preferredObjectDistance = -1;
             InteractableObject newPreferredObject = null;
 
-            // TODO: might cause lag, put off in coroutine
-            foreach (var obj in interactableObjects)
+            for (int i = 0; i < interactionTriggerParent.childCount; i++)
             {
-                float distance = (obj.transform.position - transform.position).magnitude;
-                bool isInRange = distance <= obj.interactionRadius;
+                var interactableObject = interactionTriggerParent.GetChild(i).GetComponent<InteractableObject>();
+
+                ItemTrigger itemTrigger = null;
+                if (interactableObject.GetType() == typeof(ItemTrigger))
+                {
+                    itemTrigger = (ItemTrigger)interactableObject;
+                }
+
+                // player shouldn't be able to interact with dropped items
+                if (itemTrigger != null && itemTrigger.isDropped) continue;
+
+                float distance = (interactableObject.transform.position - transform.position).magnitude;
+                bool isInRange = distance <= interactableObject.interactionRadius;
                 bool isNewClosest = distance < preferredObjectDistance || preferredObjectDistance == -1;
-                bool isSelectedObject = obj.GetType() == typeof(ItemTrigger) && ((ItemTrigger)obj).item == InventoryManager.Instance.selectedItem;
+                bool isSelectedObject = itemTrigger != null && itemTrigger.item == InventoryManager.Instance.selectedItem;
 
                 if (isInRange && isSelectedObject)
                 {
                     // prefer item that is currently selected in hotbar
                     preferredObjectDistance = -2;
-                    newPreferredObject = obj;
+                    newPreferredObject = interactableObject;
                 }
                 else if (isInRange && isNewClosest && preferredObjectDistance != -2)
                 {
                     // new closest object
                     preferredObjectDistance = distance;
-                    newPreferredObject = obj;
+                    newPreferredObject = interactableObject;
                 }
             }
 
@@ -104,15 +105,5 @@ public class InteractionManager : MonoBehaviour
 
             yield return new WaitForSeconds(searchIntervall);
         }
-    }
-
-    public void AddInteractable(InteractableObject interactable)
-    {
-        interactableObjects.Add(interactable);
-    }
-
-    public void RemoveInteractable(InteractableObject interactable)
-    {
-        interactableObjects.Remove(interactable);
     }
 }

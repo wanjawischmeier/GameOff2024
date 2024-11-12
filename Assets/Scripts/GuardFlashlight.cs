@@ -43,7 +43,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         switch (guardController.behaviourMode)
         {
             case GuardController.BehaviourMode.GameOver:
-                SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+                SceneStateManager.ReloadScene();
                 break;
             case GuardController.BehaviourMode.Pursue:
                 StartCoroutine(guardController.PursuePlayer());

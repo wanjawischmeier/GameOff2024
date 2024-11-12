@@ -12,6 +12,6 @@ public class ExitDoorTrigger : InteractableObject
     public override void Interact(Transform interactionOverlayParent)
     {
         Debug.Log("Exiting Level");
-        SceneManager.LoadScene(targetSceneBuildIndex);
+        SceneStateManager.SaveAndLoadNewScene(targetSceneBuildIndex);
     }
 }

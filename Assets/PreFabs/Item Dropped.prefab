@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1206748948082092262}
   - component: {fileID: 7197971246491968448}
   m_Layer: 0
-  m_Name: Item Trigger
+  m_Name: Item Dropped
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

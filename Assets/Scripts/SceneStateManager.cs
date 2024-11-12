@@ -2,12 +2,13 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SaveSceneState : MonoBehaviour
+public class SceneStateManager : MonoBehaviour
 {
     public struct SceneState
     {
         public Vector3 playerPosition, playerRotation;
         public GuardState[] guards;
+        public bool[] interactablesTriggered;
     }
 
     [System.Serializable]
@@ -28,13 +29,34 @@ public class SaveSceneState : MonoBehaviour
         get => Path.Combine(Application.persistentDataPath, "InventoryState.save");
     }
 
+    static string[] initialInteractableObjects;
+
     private void Start()
     {
-        LoadScene();
-        LoadInventory();
+        var interactionTriggerParent = StaticObjects.InteractionTriggerParent;
+        initialInteractableObjects = new string[interactionTriggerParent.childCount];
+        for (int i = 0; i < interactionTriggerParent.childCount; i++)
+        {
+            initialInteractableObjects[i] = interactionTriggerParent.GetChild(i).name;
+        }
+
+        LoadSceneState();
+        if (!LoadInventoryState())
+        {
+            InventoryManager.Instance.SetSelectedSlot(0);
+        }
     }
 
-    public static void SaveScene(bool savePlayer = true, bool saveGuards = true)
+    private static void ResetState(string path)
+    {
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+            Debug.Log($"Deleted state at {path}");
+        }
+    }
+
+    public static void SaveSceneState(bool savePlayer = true, bool saveGuards = true)
     {
         var sceneState = new SceneState();
 
@@ -74,11 +96,18 @@ public class SaveSceneState : MonoBehaviour
             sceneState.guards = guards;
         }
 
+        var interactionTriggerParent = StaticObjects.InteractionTriggerParent;
+        sceneState.interactablesTriggered = new bool[interactionTriggerParent.childCount];
+        for (int i = 0; i < interactionTriggerParent.childCount; i++)
+        {
+            sceneState.interactablesTriggered[i] = interactionTriggerParent.Find(initialInteractableObjects[i]) == null;
+        }
+
         string saveFile = JsonUtility.ToJson(sceneState);
         File.WriteAllText(sceneSaveFilePath, saveFile);
     }
 
-    public static bool LoadScene()
+    public static bool LoadSceneState()
     {
         if (File.Exists(sceneSaveFilePath))
         {
@@ -125,17 +154,35 @@ public class SaveSceneState : MonoBehaviour
             }
         }
 
+        var interactionTriggerParent = StaticObjects.InteractionTriggerParent;
+        for (int i = 0; i < sceneState.interactablesTriggered.Length; i++)
+        {
+            if (sceneState.interactablesTriggered[i])
+            {
+                var interactableObject = interactionTriggerParent.Find(initialInteractableObjects[i]);
+                Destroy(interactableObject.gameObject);
+            }
+        }
+
         File.Delete(sceneSaveFilePath);
         return true;
     }
 
-    public static void SaveInventory()
+    public static void ResetSceneState() => ResetState(sceneSaveFilePath);
+
+    public static void ReloadScene()
+    {
+        ResetSceneState();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public static void SaveInventoryState()
     {
         string saveFile = JsonUtility.ToJson(InventoryManager.Instance.inventoryState);
         File.WriteAllText(inventorySaveFilePath, saveFile);
     }
 
-    public static bool LoadInventory()
+    public static bool LoadInventoryState()
     {
         if (File.Exists(inventorySaveFilePath))
         {
@@ -148,7 +195,19 @@ public class SaveSceneState : MonoBehaviour
         }
 
         string saveFile = File.ReadAllText(inventorySaveFilePath);
-        InventoryManager.Instance.inventoryState = JsonUtility.FromJson<InventoryManager.InventoryState>(saveFile);
+        var inventoryState = JsonUtility.FromJson<InventoryManager.InventoryState>(saveFile);
+        var inventoryManager = InventoryManager.Instance;
+        inventoryManager.inventoryState = inventoryState;
+        inventoryManager.SetSelectedSlot(inventoryState.selectedSlot);
         return true;
+    }
+
+    public static void ResetInventoryState() => ResetState(inventorySaveFilePath);
+
+    public static void SaveAndLoadNewScene(int targetSceneBuildIndex)
+    {
+        SaveSceneState();
+        SaveInventoryState();
+        SceneManager.LoadScene(targetSceneBuildIndex);
     }
 }

@@ -359,7 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f66e8f46bc42554a8868beef1a726a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemTriggerPrefab: {fileID: 1022871445039581981, guid: 8df8b9ce009b35248bcad94dedb76993, type: 3}
+  itemDroppedPrefab: {fileID: 1022871445039581981, guid: 8df8b9ce009b35248bcad94dedb76993, type: 3}
   content: {fileID: 6125936216264586601}
   itemName: {fileID: 3169021986434650635}
   defaultColor: {r: 0, g: 0, b: 0, a: 0.4}

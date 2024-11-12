@@ -153,6 +153,8 @@ public class GuardController : MonoBehaviour
         }
 
         // player has been caught
-        SceneManager.LoadSceneAsync(0);
+        SceneStateManager.ResetSceneState();
+        SceneStateManager.ResetInventoryState();
+        SceneManager.LoadScene(0);
     }
 }

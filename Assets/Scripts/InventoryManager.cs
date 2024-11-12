@@ -23,7 +23,7 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    public GameObject itemTriggerPrefab;
+    public GameObject itemDroppedPrefab;
     public Transform content;
     public TextMeshProUGUI itemName;
     public Color defaultColor, selectedColor;
@@ -46,11 +46,16 @@ public class InventoryManager : MonoBehaviour
 
         set
         {
-            selectedSlot = value.selectedSlot;
-            foreach (var slot in value.slots)
+            InventorySlot slot;
+
+            for (int slotIndex = 0; slotIndex < value.slots.Length; slotIndex++)
             {
+                slot = value.slots[slotIndex];
+                selectedSlot = slotIndex;
                 AddItem(slot.itemId, slot.count);
             }
+
+            selectedSlot = value.selectedSlot;
         }
     }
 
@@ -93,11 +98,6 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        SetSelectedSlot(0);
-    }
-
     private void Update()
     {
         if (Input.anyKeyDown)
@@ -130,7 +130,17 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    private void SetSelectedSlot(int slotIndex)
+    private Image GetSlotImage(int slotIndex) => slotTransforms[slotIndex].GetChild(0).GetComponent<Image>();
+
+    private Transform GetSlotBubble(int slotIndex) => slotTransforms[selectedSlot].GetChild(1);
+
+    private TextMeshProUGUI GetBubbleText(Transform bubble) => bubble.GetChild(0).GetComponent<TextMeshProUGUI>();
+
+    /// <summary>
+    /// The scene state manager is responsible for calling this function once the inventory state is loaded
+    /// </summary>
+    /// <param name="slotIndex"></param>
+    public void SetSelectedSlot(int slotIndex)
     {
         var slotTransform = slotTransforms[selectedSlot];
         slotTransform.localScale = Vector3.one;
@@ -152,12 +162,6 @@ public class InventoryManager : MonoBehaviour
             itemName.text = slot.item.name;
         }
     }
-
-    private Image GetSlotImage(int slotIndex) => slotTransforms[slotIndex].GetChild(0).GetComponent<Image>();
-
-    private Transform GetSlotBubble(int slotIndex) => slotTransforms[selectedSlot].GetChild(1);
-
-    private TextMeshProUGUI GetBubbleText(Transform bubble) => bubble.GetChild(0).GetComponent<TextMeshProUGUI>();
 
     public void AddItem(Item item) => AddItem(item.itemId);
 
@@ -255,7 +259,7 @@ public class InventoryManager : MonoBehaviour
         }
 
         slots[slotIndex] = slot;
-        SaveSceneState.SaveInventory();
+        SceneStateManager.SaveInventoryState();
         return true;
     }
 
@@ -265,7 +269,7 @@ public class InventoryManager : MonoBehaviour
         var itemRotation = PlayerController.Instance.bodyTransform.eulerAngles.RandomlySpreadVector(itemDropRotationSpread);
         itemRotation.z += 90;    // rotate item by 90 degrees
 
-        var itemObj = Instantiate(itemTriggerPrefab,
+        var itemObj = Instantiate(itemDroppedPrefab,
             itemPosition, Quaternion.Euler(itemRotation),
             StaticObjects.InteractionTriggerParent
         );
@@ -273,11 +277,10 @@ public class InventoryManager : MonoBehaviour
 
         var itemTrigger = itemObj.GetComponent<ItemTrigger>();
         itemTrigger.item = slot.item;
+        StartCoroutine(itemTrigger.MarkAsDropped());
 
         var itemRenderer = itemObj.GetComponent<SpriteRenderer>();
         itemRenderer.sprite = slot.item.sprite;
-
-        InteractionManager.Instance.AddInteractable(itemTrigger);
     }
 
     public bool DropItem() => DropItem(selectedSlot);
