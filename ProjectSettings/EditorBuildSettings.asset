@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ChatWindow.unity
     guid: a6e5e4c230a7ce74fa4d53321ee01265
+  - enabled: 1
+    path: Assets/Scenes/Menus/Start Menu.unity
+    guid: ea2e360536f29d34297c10e25e086a06
+  - enabled: 1
+    path: Assets/Scenes/Menus/Options Menu.unity
+    guid: 2241211735974bb41bf8d34e3ac0593a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
