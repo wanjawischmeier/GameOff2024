@@ -1375,7 +1375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.10980392}
+  m_Color: {r: 0.05882353, g: 0.1764706, b: 0.42352942, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1549,6 +1549,7 @@ GameObject:
   - component: {fileID: 1916017814}
   - component: {fileID: 1916017817}
   - component: {fileID: 1916017818}
+  - component: {fileID: 1916017820}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1688,6 +1689,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadButton: {fileID: 1455088473}
+--- !u!114 &1916017820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916017813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05b62dd872941a34eba59e2fd5ffd8b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookup: {fileID: 11400000, guid: 9d4f684eeeb27eb4d8612d69af97c9fd, type: 2}
+  playSoundtrack: 1
+  fxAudioSource: {fileID: 0}
+  soundtrackAudioSource: {fileID: 0}
 --- !u!1 &1988415774
 GameObject:
   m_ObjectHideFlags: 0
