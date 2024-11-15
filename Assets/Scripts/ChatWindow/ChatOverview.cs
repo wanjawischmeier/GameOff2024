@@ -27,4 +27,14 @@ public class ChatOverview : MonoBehaviour
         selectedChatTransform.gameObject.SetActive(true);
         contactName.text = selectedChatTransform.name;
     }
+
+    public void OnBackToMenu()
+    {
+        SceneTransitionFader.TransitionToScene("StartMenu");
+    }
+
+    public void OnNextNight()
+    {
+        SceneTransitionFader.TransitionToScene("CampusOutside");
+    }
 }

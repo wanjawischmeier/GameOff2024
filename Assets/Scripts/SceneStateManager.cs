@@ -173,7 +173,7 @@ public class SceneStateManager : MonoBehaviour
     public static void ReloadScene()
     {
         ResetSceneState();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneTransitionFader.TransitionToScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public static void SaveInventoryState()
@@ -208,6 +208,6 @@ public class SceneStateManager : MonoBehaviour
     {
         SaveSceneState();
         SaveInventoryState();
-        SceneManager.LoadScene(targetSceneBuildIndex);
+        SceneTransitionFader.TransitionToScene(targetSceneBuildIndex);
     }
 }

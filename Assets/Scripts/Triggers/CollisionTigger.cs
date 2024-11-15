@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class CollisionTigger : MonoBehaviour
 {
@@ -31,6 +30,6 @@ public class CollisionTigger : MonoBehaviour
     {
         Debug.Log($"Confirmed prompt to switch scene to {targetSceneBuildIndex}");
         SceneStateManager.ResetSceneState();
-        SceneManager.LoadScene(targetSceneBuildIndex);
+        SceneTransitionFader.TransitionToScene(targetSceneBuildIndex);
     }
 }

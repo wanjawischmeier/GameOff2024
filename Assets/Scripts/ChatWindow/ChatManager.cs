@@ -19,9 +19,10 @@ public class ChatManager : MonoBehaviour
 
     }
 
-    public void SendMessage()
+    public void SendMessage(int chatIndex)
     {
-        Instantiate(messagePlayerPrefab, chatScrollViewContent);
+        var parent = chatScrollRect.transform.GetChild(0).GetChild(chatIndex);
+        Instantiate(messagePlayerPrefab, parent);
         if (chatScrollRect.verticalNormalizedPosition < chatScrollDownThreshold)
         {
             // only scroll down further if user is already scrolled down

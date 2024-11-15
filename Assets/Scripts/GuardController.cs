@@ -155,6 +155,6 @@ public class GuardController : MonoBehaviour
         // player has been caught
         SceneStateManager.ResetSceneState();
         SceneStateManager.ResetInventoryState();
-        SceneManager.LoadScene(0);
-    }
+        SceneTransitionFader.TransitionToScene("CampusOutside");
+    }   
 }

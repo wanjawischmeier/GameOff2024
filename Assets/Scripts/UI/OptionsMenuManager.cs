@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class OptionsMenuManager : MonoBehaviour
 {
+    public RectTransform frame;
     public Slider fxVolumeSlider, soundtrackVolumeSlider;
 
     private void Start()
@@ -15,6 +16,9 @@ public class OptionsMenuManager : MonoBehaviour
         soundtrackVolumeSlider.onValueChanged.AddListener(ChangeSoundtrackVolume);
         soundtrackVolumeSlider.value = SettingsManager.Settings.soundtrackVolume;
         soundtrackVolumeSlider.maxValue = Settings.maxSoundtrackVolume;
+
+        frame.Translate(-frame.rect.width, 0, 0);
+        LeanTween.moveX(frame, 0, SceneTransitionFader.sceneTransitionOutTime);
     }
 
     private void ApplySettingsChange(bool playSound = false)
@@ -41,7 +45,10 @@ public class OptionsMenuManager : MonoBehaviour
 
     public void GoBack()
     {
-        SceneManager.UnloadSceneAsync("Options Menu");
+        LeanTween.moveX(frame, -frame.rect.width, SceneTransitionFader.sceneTransitionOutTime).setOnComplete(() =>
+        {
+            SceneManager.UnloadSceneAsync("Options Menu");
+        });
     }
 
     public void ChangeFXVolume(float volume)

@@ -17,6 +17,14 @@ public class PlayerController : MonoBehaviour
 
     public static PlayerController Instance { get; private set; }
 
+    Rigidbody2D body;
+    PauseMenuManager pauseMenuManager;
+
+    float horizontal;
+    float vertical;
+    float moveLimiter = 0.7f;
+    int animatorWalkingBoolId, animatorInteractTriggerId;
+
     private void Awake()
     {
         Transform = transform;
@@ -32,17 +40,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    Rigidbody2D body;
-
-    float horizontal;
-    float vertical;
-    float moveLimiter = 0.7f;
-    int animatorWalkingBoolId, animatorInteractTriggerId;
-
 
     private void Start()
     {
         body = GetComponent<Rigidbody2D>();
+        pauseMenuManager = FindAnyObjectByType<PauseMenuManager>();
 
         animatorWalkingBoolId = Animator.StringToHash("Walking");
         animatorInteractTriggerId = Animator.StringToHash("Interact");
@@ -62,6 +64,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             InventoryManager.Instance.DropItem();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            pauseMenuManager.ToggleMenu();
         }
     }
 

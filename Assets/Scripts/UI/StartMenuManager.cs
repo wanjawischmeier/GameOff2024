@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,7 +9,10 @@ public class StartMenuManager : MonoBehaviour
 
     private void Start()
     {
-        
+        if (StoryStateManager.saveExists)
+        {
+            loadButton.interactable = true;
+        }
     }
 
     private void Update()
@@ -18,21 +22,17 @@ public class StartMenuManager : MonoBehaviour
 
     public void NewGame()
     {
-
+        StoryStateManager.ResetStoryState();
+        LoadGame();
     }
 
     public void LoadGame()
     {
-
+        SceneTransitionFader.TransitionToScene("ChatWindow");
     }
 
     public void Options()
     {
         SceneManager.LoadScene("Options Menu", LoadSceneMode.Additive);
-    }
-
-    public void Exit()
-    {
-        Application.Quit();
     }
 }
