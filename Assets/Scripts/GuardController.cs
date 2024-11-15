@@ -148,7 +148,11 @@ public class GuardController : MonoBehaviour
 
         while ((transform.position - target.position).magnitude > pursuitCatchDistance)
         {
-            agent.SetDestination(target.position);
+            if (enabled)
+            {
+                agent.SetDestination(target.position);
+            }
+
             yield return new WaitForSeconds(0.1f);
         }
 

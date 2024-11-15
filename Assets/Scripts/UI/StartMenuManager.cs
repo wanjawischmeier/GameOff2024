@@ -33,6 +33,6 @@ public class StartMenuManager : MonoBehaviour
 
     public void Options()
     {
-        SceneManager.LoadScene("Options Menu", LoadSceneMode.Additive);
+        SceneManager.LoadScene("OptionsMenu", LoadSceneMode.Additive);
     }
 }

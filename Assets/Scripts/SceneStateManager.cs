@@ -1,5 +1,6 @@
 using System.IO;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
 public class SceneStateManager : MonoBehaviour
@@ -30,6 +31,8 @@ public class SceneStateManager : MonoBehaviour
     }
 
     static string[] initialInteractableObjects;
+    static Vector2 playerVelocity;
+    static Vector2[] guardVelocitys;
 
     private void Start()
     {
@@ -176,6 +179,50 @@ public class SceneStateManager : MonoBehaviour
         SceneTransitionFader.TransitionToScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public static void SetScenePause(bool isPaused)
+    {
+        PlayerController.Instance.enabled = !isPaused;
+        PlayerController.Instance.animator.enabled = !isPaused;
+        var playerRigidBody = PlayerController.Transform.GetComponent<Rigidbody2D>();
+        if (isPaused)
+        {
+            playerVelocity = playerRigidBody.linearVelocity;
+            playerRigidBody.linearVelocity = Vector2.zero;
+        }
+        else
+        {
+            playerRigidBody.linearVelocity = playerVelocity;
+        }
+
+        var clock = FindAnyObjectByType<AnalogClock>();
+        clock.enabled = !isPaused;
+
+        var guardTransforms = StaticObjects.Guards;
+        if (isPaused)
+        {
+            guardVelocitys = new Vector2[guardTransforms.Length];
+        }
+
+        for (int i = 0; i < guardTransforms.Length; i++)
+        {
+            var guardTransform = guardTransforms[i];
+            var guardController = guardTransform.GetComponent<GuardController>();
+            var guardAgent = guardTransform.GetComponent<NavMeshAgent>();
+            guardController.enabled = !isPaused;
+            guardAgent.isStopped = isPaused;
+
+            if (isPaused)
+            {
+                guardVelocitys[i] = guardAgent.velocity;
+                guardAgent.velocity = Vector2.zero;
+            }
+            else
+            {
+                guardAgent.velocity = guardVelocitys[i];
+            }
+        }
+    }
+
     public static void SaveInventoryState()
     {
         string saveFile = JsonUtility.ToJson(InventoryManager.Instance.inventoryState);
@@ -203,6 +250,13 @@ public class SceneStateManager : MonoBehaviour
     }
 
     public static void ResetInventoryState() => ResetState(inventorySaveFilePath);
+
+    public static void SaveAndLoadNewScene(string sceneName)
+    {
+        SaveSceneState();
+        SaveInventoryState();
+        SceneTransitionFader.TransitionToScene(sceneName);
+    }
 
     public static void SaveAndLoadNewScene(int targetSceneBuildIndex)
     {

@@ -47,7 +47,7 @@ public class OptionsMenuManager : MonoBehaviour
     {
         LeanTween.moveX(frame, -frame.rect.width, SceneTransitionFader.sceneTransitionOutTime).setOnComplete(() =>
         {
-            SceneManager.UnloadSceneAsync("Options Menu");
+            SceneManager.UnloadSceneAsync("OptionsMenu");
         });
     }
 
