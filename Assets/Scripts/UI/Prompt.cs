@@ -10,11 +10,15 @@ public class Prompt : MonoBehaviour
     public delegate void OnButtonClicked();
     public event OnButtonClicked onCanceled, onConfirmed;
 
+    RectTransform contentTransform;
+    float alpha;
+
     private void Start()
     {
         var cancelAnimated = new UnityAction(() =>
         {
-            LeanTween.scale((RectTransform)transform, Vector3.zero, SceneTransitionFader.sceneTransitionOutTime)
+            LeanTween.alpha((RectTransform)transform, 0, SceneTransitionFader.sceneTransitionInTime);
+            LeanTween.scale(contentTransform, Vector3.zero, SceneTransitionFader.sceneTransitionOutTime)
             .setOnComplete(() =>
             {
                 onCanceled.Invoke();
@@ -25,7 +29,10 @@ public class Prompt : MonoBehaviour
         cancel.onClick.AddListener(cancelAnimated);
         confirm.onClick.AddListener(() => onConfirmed.Invoke());
 
-        transform.localScale = Vector3.zero;
-        LeanTween.scale((RectTransform)transform, Vector3.one, SceneTransitionFader.sceneTransitionOutTime);
+        alpha = GetComponent<Image>().color.a;
+        contentTransform = (RectTransform)transform.GetChild(0);
+        contentTransform.localScale = Vector3.zero;
+        LeanTween.scale(contentTransform, Vector3.one, SceneTransitionFader.sceneTransitionOutTime);
+        LeanTween.alpha((RectTransform)transform, alpha, SceneTransitionFader.sceneTransitionOutTime);
     }
 }

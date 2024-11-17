@@ -45,10 +45,22 @@ public class ChatManager : MonoBehaviour
                 storyline = chatTransform.GetComponent<Storyline>()
             };
 
-            int currentMessageIndex = StoryStateManager.storyStates[chatIndex].currentMessageIndex;
-            for (int messageIndex = currentMessageIndex; messageIndex < chatTransform.childCount; messageIndex++)
+            var storyState = StoryStateManager.storyStates[chatIndex];
+            int currentMessageIndex = storyState.currentMessageIndex;
+            for (int messageIndex = 0; messageIndex < chatTransform.childCount; messageIndex++)
             {
-                chatTransform.GetChild(messageIndex).gameObject.SetActive(false);
+                var messageTransform = chatTransform.GetChild(messageIndex);
+
+                if (messageIndex < currentMessageIndex)
+                {
+                    var dateTransform = messageTransform.Find("Message Content").Find("Date and Time (TMP)");
+                    var messageTime = DateTime.FromFileTime(storyState.messageTimes[messageIndex]);
+                    dateTransform.GetComponent<TextMeshProUGUI>().text = messageTime.ToString("HH:mm");
+                }
+                else
+                {
+                    messageTransform.gameObject.SetActive(false);
+                }
             }
 
             StartCoroutine(ProgressStory(chatIndex));
@@ -159,9 +171,13 @@ public class ChatManager : MonoBehaviour
 
     private void SendNextMessage(int chatIndex, int messageIndex, Transform messageTransform)
     {
-        StoryStateManager.storyStates[chatIndex].messageTimes[messageIndex] = DateTime.Now.ToFileTime();
+        long messageTime = DateTime.Now.ToFileTime();
+        StoryStateManager.storyStates[chatIndex].messageTimes[messageIndex] = messageTime;
         StoryStateManager.storyStates[chatIndex].currentMessageIndex++;
         ScrollDown();
+
+        var dateTransform = messageTransform.Find("Message Content").Find("Date and Time (TMP)");
+        dateTransform.GetComponent<TextMeshProUGUI>().text = DateTime.FromFileTime(messageTime).ToString("HH:mm");
 
         if (selectedChatIndex != chatIndex)
         {
@@ -271,6 +287,10 @@ public class ChatManager : MonoBehaviour
             }
 
             yield return WriteMessage(chatIndex, messageIndex, messageTransform);
+
+            // wait a little bit before writing next message
+            float writeTime = UnityEngine.Random.Range(writeMessageMinTime, writeMessageMaxTime);
+            yield return new WaitForSeconds(writeTime);
         }
 
         Debug.Log($"{storyline.storylineName}: storyline comleted.");

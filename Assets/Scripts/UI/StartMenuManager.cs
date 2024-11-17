@@ -1,11 +1,13 @@
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class StartMenuManager : MonoBehaviour
 {
-    public Button loadButton;   // TODO: disable load button if no save file is found
+    public GameObject promptPrefab;
+    public Button loadButton;
+
+    GameObject promptObj;
 
     private void Start()
     {
@@ -15,13 +17,28 @@ public class StartMenuManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnPromptCanceled()
     {
-        
+        Destroy(promptObj);
     }
 
-    public void NewGame()
+    private void OnPromptConfirmed()
     {
+        Debug.Log("Confirmed prompt to overwrite existing save.");
+        NewGame(true);
+    }
+
+    public void NewGame(bool forceOverwrite = false)
+    {
+        if (StoryStateManager.saveExists && !forceOverwrite)
+        {
+            promptObj = Instantiate(promptPrefab, transform.Find("Canvas"));
+            var prompt = promptObj.GetComponent<Prompt>();
+            prompt.onCanceled += OnPromptCanceled;
+            prompt.onConfirmed += OnPromptConfirmed;
+            return;
+        }
+
         StoryStateManager.ResetStoryState();
         LoadGame();
     }

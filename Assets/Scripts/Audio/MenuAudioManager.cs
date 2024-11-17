@@ -15,7 +15,7 @@ public class MenuAudioManager : MonoBehaviour
 
     private void Start()
     {
-        selectables = FindObjectsByType<Selectable>(FindObjectsSortMode.None);
+        selectables = FindObjectsByType<Selectable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         fxAudioSource = gameObject.AddComponent<AudioSource>();
         fxAudioSource.volume = SettingsManager.Settings.fxVolume;
         fxAudioSource.playOnAwake = false;
@@ -32,17 +32,20 @@ public class MenuAudioManager : MonoBehaviour
         entries = new List<EventTrigger.Entry>();
         AddEventTriggerClipEntry(EventTriggerType.PointerEnter, lookup.onHover);
         AddEventTriggerClipEntry(EventTriggerType.PointerDown, lookup.onClick);
-        AddEventTriggerClipEntry(EventTriggerType.PointerUp, lookup.onHover);
-        AddEventTriggerClipEntry(EventTriggerType.BeginDrag, lookup.onClick);
-        AddEventTriggerClipEntry(EventTriggerType.EndDrag, lookup.onHover);
 
         foreach (var selectable in selectables)
         {
             if (selectable.gameObject.scene != gameObject.scene || !selectable.interactable) continue;
-
+            
             EventTrigger trigger = selectable.gameObject.AddComponent<EventTrigger>();
             foreach (var entry in entries)
             {
+                // don't add pointer enter to sliders
+                if (selectable.GetType() == typeof(Slider) && entry.eventID == EventTriggerType.PointerEnter)
+                {
+                    continue;
+                }
+
                 trigger.triggers.Add(entry);
             }
         }
@@ -50,7 +53,7 @@ public class MenuAudioManager : MonoBehaviour
 
     private void AddEventTriggerClipEntry(EventTriggerType type, AudioClip clip)
     {
-        var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+        var entry = new EventTrigger.Entry { eventID = type };
         entry.callback.AddListener((eventData) => PlayClip(clip));
         entries.Add(entry);
     }
