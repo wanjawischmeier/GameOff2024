@@ -8,6 +8,7 @@ public class AnalogClock : MonoBehaviour
 
     float totalTime = 0;
     float currentTime = 0;
+    float hourRotationOffset, minuteRotationOffset;
 
     const int hoursInDay = 24, minutesInHour = 60;
     const float hoursToDegrees = 360 / 12, minutesToDegrees = 360 / 60;
@@ -16,25 +17,10 @@ public class AnalogClock : MonoBehaviour
 
     float Minutes => (currentTime * hoursInDay * minutesInHour / dayDuration) % minutesInHour;
 
-    string Clock24Hour => Mathf.FloorToInt(Hour).ToString("00") + ":" + Mathf.FloorToInt(Minutes).ToString("00");
-
-    string Clock12Hour
+    private void Start()
     {
-        get
-        {
-            int hour = Mathf.FloorToInt(Hour);
-            string abbreviation = "AM";
-
-            if (hour >= 12)
-            {
-                abbreviation = "PM";
-                hour -= 12;
-            }
-
-            if (hour == 0) hour = 12;
-
-            return hour.ToString("00") + ":" + Mathf.FloorToInt(Minutes).ToString("00") + " " + abbreviation;
-        }
+        hourRotationOffset = hourHand.rotation.z * Mathf.Rad2Deg;
+        minuteRotationOffset = minuteHand.rotation.z * Mathf.Rad2Deg;
     }
 
     private void Update()
@@ -42,7 +28,7 @@ public class AnalogClock : MonoBehaviour
         totalTime += Time.deltaTime;
         currentTime = totalTime % dayDuration;
 
-        hourHand.rotation = Quaternion.Euler(0, 0, -Hour * hoursToDegrees);
-        minuteHand.rotation = Quaternion.Euler(0, 0, -Minutes * minutesToDegrees);
+        hourHand.rotation = Quaternion.Euler(0, 0, -Hour * hoursToDegrees + hourRotationOffset);
+        minuteHand.rotation = Quaternion.Euler(0, 0, -Minutes * minutesToDegrees + minuteRotationOffset);
     }
 }

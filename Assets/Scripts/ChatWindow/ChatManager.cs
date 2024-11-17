@@ -266,7 +266,7 @@ public class ChatManager : MonoBehaviour
                     // the next message should just be written
                     Debug.Log($"{storyline.storylineName}: instantly writing next message...");
                     break;
-                case Storyline.ConditionType.TimeInHours:
+                case Storyline.ConditionType.TimeInSeconds:
                     // the next message should be written after a certain amount of time has passed
                     Debug.Log($"{storyline.storylineName}: waiting for continuation time");
                     var previousMessageTime = DateTime.FromFileTime(storyState.messageTimes[messageIndex - 1]);

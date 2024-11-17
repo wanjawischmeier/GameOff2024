@@ -36,18 +36,7 @@ public class MenuAudioManager : MonoBehaviour
         foreach (var selectable in selectables)
         {
             if (selectable.gameObject.scene != gameObject.scene || !selectable.interactable) continue;
-            
-            EventTrigger trigger = selectable.gameObject.AddComponent<EventTrigger>();
-            foreach (var entry in entries)
-            {
-                // don't add pointer enter to sliders
-                if (selectable.GetType() == typeof(Slider) && entry.eventID == EventTriggerType.PointerEnter)
-                {
-                    continue;
-                }
-
-                trigger.triggers.Add(entry);
-            }
+            AddSelectable(selectable);
         }
     }
 
@@ -62,5 +51,20 @@ public class MenuAudioManager : MonoBehaviour
     {
         fxAudioSource.clip = clip;
         fxAudioSource.Play();
+    }
+
+    public void AddSelectable(Selectable selectable)
+    {
+        EventTrigger trigger = selectable.gameObject.AddComponent<EventTrigger>();
+        foreach (var entry in entries)
+        {
+            // don't add pointer enter to sliders
+            if (selectable.GetType() == typeof(Slider) && entry.eventID == EventTriggerType.PointerEnter)
+            {
+                continue;
+            }
+
+            trigger.triggers.Add(entry);
+        }
     }
 }

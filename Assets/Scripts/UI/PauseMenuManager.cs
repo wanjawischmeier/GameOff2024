@@ -11,6 +11,7 @@ public class PauseMenuManager : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         alpha = image.color.a;
     }
 
@@ -31,6 +32,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ShowMenu()
     {
+        Cursor.lockState = CursorLockMode.None;
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0);
         fill.gameObject.SetActive(true);
 
@@ -41,6 +43,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void HideMenu()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         LeanTween.scale((RectTransform)fill.GetChild(0), Vector3.zero, SceneTransitionFader.sceneTransitionOutTime);
         LeanTween.alpha(fill, 0, SceneTransitionFader.sceneTransitionInTime).setOnComplete(() =>
         {

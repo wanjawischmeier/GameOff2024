@@ -16,6 +16,7 @@ public class CollisionTigger : MonoBehaviour
         var prompt = promptObj.GetComponent<Prompt>();
         prompt.onCanceled += OnPromptCanceled;
         prompt.onConfirmed += OnPromptConfirmed;
+        Cursor.lockState = CursorLockMode.None;
 
         Debug.Log($"Entered collision trigger, prompting switch to scene {targetSceneBuildIndex}");
     }
@@ -24,6 +25,7 @@ public class CollisionTigger : MonoBehaviour
     {
         Destroy(promptObj);
         SceneStateManager.SetScenePause(false);
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnPromptConfirmed()

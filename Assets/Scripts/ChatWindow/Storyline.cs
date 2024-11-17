@@ -5,7 +5,7 @@ public class Storyline : MonoBehaviour
 {
     public enum ConditionType
     {
-        None, TimeInHours, Item
+        None, TimeInSeconds, Item
     }
 
     [Serializable]
