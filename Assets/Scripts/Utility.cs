@@ -26,15 +26,6 @@ public static class Utility
         return new Vector2(vector.x, vector.y);
     }
 
-    public static void SetSceneStopped(bool isStopped, Transform[] guards)
-    {
-        PlayerController.Instance.isStopped = isStopped;
-        foreach (var guard in guards)
-        {
-            guard.GetComponent<GuardController>().isStopped = isStopped;
-        }
-    }
-
     public static Vector3 RandomlySpreadVector(this Vector3 vector, float spreadFactor)
     {
         return new Vector3()

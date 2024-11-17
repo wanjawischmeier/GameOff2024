@@ -1,17 +1,25 @@
+using System;
 using System.IO;
 using UnityEngine;
 
 public class StoryStateManager : MonoBehaviour
 {
+    [Serializable]
+    public struct StoryState
+    {
+        public int currentMessageIndex, unreadMessages;
+        public long[] messageTimes;
+    }
+
     // wrapper struct is neccessary for JsonUtitlity to serialize correctly
     struct StoryStates
     {
-        public int[] indicies;
+        public StoryState[] storyStates;
     }
 
     public ChatManager chatManager;
 
-    public static int[] storylineStates = null;
+    public static StoryState[] storyStates = null;
     static RectTransform storylineParent;
     static Storyline[] storylines;
 
@@ -22,28 +30,31 @@ public class StoryStateManager : MonoBehaviour
 
     public static bool saveExists => File.Exists(storySaveFilePath);
 
-    private void Start()
+    private void Awake()
     {
         storylineParent = (RectTransform)chatManager.chatScrollRect.transform.GetChild(0);
-        storylines = FindObjectsByType<Storyline>(FindObjectsSortMode.None);
+        storylines = FindObjectsByType<Storyline>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
         LoadStoryState();
     }
 
     public static void SaveStoryState()
     {
-        StoryStates states = new StoryStates();
-
-        if (storylineStates == null)
+        if (storyStates == null)
         {
             Debug.Log($"Creating new story save at {storySaveFilePath}.");
-            states.indicies = new int[storylines.Length];
-        }
-        else
-        {
-            states.indicies = storylineStates;
+            storyStates = new StoryState[storylines.Length];
+            for (int i = 0; i < storylines.Length; i++)
+            {
+                storyStates[i] = new StoryState()
+                {
+                    currentMessageIndex = 0, unreadMessages = 0,
+                    messageTimes = new long[storylines[i].transform.childCount]
+                };
+            }
         }
 
+        StoryStates states = new StoryStates() { storyStates = storyStates };
         string saveFile = JsonUtility.ToJson(states);
         File.WriteAllText(storySaveFilePath, saveFile);
     }
@@ -63,7 +74,7 @@ public class StoryStateManager : MonoBehaviour
 
         string saveFile = File.ReadAllText(storySaveFilePath);
         var states = JsonUtility.FromJson<StoryStates>(saveFile);
-        storylineStates = states.indicies;
+        storyStates = states.storyStates;
 
         return true;
     }
@@ -76,7 +87,7 @@ public class StoryStateManager : MonoBehaviour
         }
 
         File.Delete(storySaveFilePath);
-        storylineStates = null;
+        storyStates = null;
 
         return true;
     }

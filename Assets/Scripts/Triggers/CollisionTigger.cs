@@ -11,7 +11,7 @@ public class CollisionTigger : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         collision.transform.position += shift;
-        Utility.SetSceneStopped(true, StaticObjects.Guards);
+        SceneStateManager.SetScenePause(true);
         promptObj = Instantiate(promptPrefab, StaticObjects.UiParent);
         var prompt = promptObj.GetComponent<Prompt>();
         prompt.onCanceled += OnPromptCanceled;
@@ -23,7 +23,7 @@ public class CollisionTigger : MonoBehaviour
     private void OnPromptCanceled()
     {
         Destroy(promptObj);
-        Utility.SetSceneStopped(false, StaticObjects.Guards);
+        SceneStateManager.SetScenePause(false);
     }
 
     private void OnPromptConfirmed()

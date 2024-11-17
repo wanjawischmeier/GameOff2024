@@ -1,33 +1,58 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ChatManager : MonoBehaviour
 {
+    struct Chat
+    {
+        public Transform transform, messageCountBubble;
+        public Storyline storyline;
+    }
+
     public GameObject messagePlayerPrefab, messageGameCharacterPrefab;
-    public Transform chatScrollViewContent;
+    public GameObject nightRecap, contactBanner;
+    public Transform overviewScrollViewContent, chatScrollViewContent;
+    public TextMeshProUGUI contactName;
     public ScrollRect chatScrollRect;
+    public Color selectedChatColor, deselectedChatColor;
+
+    Transform chatViewport;
+    Chat[] chats;
+    int selectedChatIndex = -1;
 
     const float chatScrollDownThreshold = 0.1f;
+    const float messageStartDelay = 2;
+    const float writeMessageMinTime = 0.5f;
+    const float writeMessageMaxTime = 4;
 
     private void Start()
     {
+        chatViewport = chatScrollRect.transform.GetChild(0);
         chatScrollRect.verticalNormalizedPosition = 0;
-    }
 
-    private void Update()
-    {
-
-    }
-
-    public void SendMessage(int chatIndex)
-    {
-        var parent = chatScrollRect.transform.GetChild(0).GetChild(chatIndex);
-        Instantiate(messagePlayerPrefab, parent);
-        if (chatScrollRect.verticalNormalizedPosition < chatScrollDownThreshold)
+        chats = new Chat[chatViewport.childCount];
+        for (int chatIndex = 0; chatIndex < chatViewport.childCount; chatIndex++)
         {
-            // only scroll down further if user is already scrolled down
-            UpdateLayout(transform);
-            chatScrollRect.verticalNormalizedPosition = 0;
+            var chatTransform = chatViewport.GetChild(chatIndex);
+            chats[chatIndex] = new Chat()
+            {
+                transform = chatTransform,
+                messageCountBubble = overviewScrollViewContent.GetChild(chatIndex).Find("Bubble"),
+                storyline = chatTransform.GetComponent<Storyline>()
+            };
+
+            int currentMessageIndex = StoryStateManager.storyStates[chatIndex].currentMessageIndex;
+            for (int messageIndex = currentMessageIndex; messageIndex < chatTransform.childCount; messageIndex++)
+            {
+                chatTransform.GetChild(messageIndex).gameObject.SetActive(false);
+            }
+
+            StartCoroutine(ProgressStory(chatIndex));
+            UpdateMessagCountBubble(chatIndex);
         }
     }
 
@@ -69,5 +94,195 @@ public class ChatManager : MonoBehaviour
             fitter.SetLayoutVertical();
             fitter.SetLayoutHorizontal();
         }
+    }
+
+    private bool ScrollDown(bool unconditionally = false)
+    {
+        if (chatScrollRect.verticalNormalizedPosition >= chatScrollDownThreshold && !unconditionally)
+        {
+            return false;
+        }
+
+        // only scroll down further if user is already scrolled down
+        UpdateLayout(transform);
+        chatScrollRect.verticalNormalizedPosition = 0;
+
+        return true;
+    }
+
+    private void UpdateMessagCountBubble(int chatIndex)
+    {
+        var messageCountBubble = chats[chatIndex].messageCountBubble;
+        var textMesh = messageCountBubble.GetChild(0).GetComponent<TextMeshProUGUI>();
+
+        int unreadMessages = StoryStateManager.storyStates[chatIndex].unreadMessages;
+        if (unreadMessages == 0)
+        {
+            messageCountBubble.gameObject.SetActive(false);
+        }
+        else
+        {
+            messageCountBubble.gameObject.SetActive(true);
+            textMesh.text = unreadMessages.ToString();
+        }
+    }
+
+    public void SetChat(int chatIndex)
+    {
+        if (selectedChatIndex == -1)
+        {
+            nightRecap.SetActive(false);
+            contactBanner.SetActive(true);
+        }
+        else
+        {
+            // hide previous chat
+            chatViewport.GetChild(selectedChatIndex).gameObject.SetActive(false);
+            var previousOverviewItem = overviewScrollViewContent.GetChild(selectedChatIndex);
+            previousOverviewItem.GetComponent<Image>().color = deselectedChatColor;
+        }
+
+        selectedChatIndex = chatIndex;
+
+        chats[chatIndex].transform.gameObject.SetActive(true);
+        contactName.text = chats[chatIndex].transform.name;
+
+        var overviewItem = overviewScrollViewContent.GetChild(selectedChatIndex);
+        overviewItem.GetComponent<Image>().color = selectedChatColor;
+
+        StoryStateManager.storyStates[chatIndex].unreadMessages = 0;
+        UpdateMessagCountBubble(chatIndex);
+        StoryStateManager.SaveStoryState();
+
+        ScrollDown(true);
+    }
+
+    private void SendNextMessage(int chatIndex, int messageIndex, Transform messageTransform)
+    {
+        StoryStateManager.storyStates[chatIndex].messageTimes[messageIndex] = DateTime.Now.ToFileTime();
+        StoryStateManager.storyStates[chatIndex].currentMessageIndex++;
+        ScrollDown();
+
+        if (selectedChatIndex != chatIndex)
+        {
+            // player hasn't read message yet
+            StoryStateManager.storyStates[chatIndex].unreadMessages++;
+            UpdateMessagCountBubble(chatIndex);
+        }
+
+        StoryStateManager.SaveStoryState();
+        Debug.Log($"Wrote message {messageIndex} in chat {chatIndex}");
+    }
+
+    public IEnumerator WriteMessage(int chatIndex, int messageIndex, Transform messageTransform)
+    {
+        messageTransform.gameObject.SetActive(true);
+        var disabledObjects = new List<GameObject>();
+        TextMeshProUGUI textMesh = null;
+        string messageText = "";
+
+        // hide other elements and display ... in text element
+        var contentTransform = messageTransform.Find("Message Content");
+        for (int i = 0; i < contentTransform.childCount; i++)
+        {
+            var child = contentTransform.GetChild(i);
+            if (child.name == "Message Text (TMP)")
+            {
+                textMesh = child.GetComponent<TextMeshProUGUI>();
+                messageText = textMesh.text;
+                textMesh.text = "...";
+            }
+            else
+            {
+                child.gameObject.SetActive(false);
+                disabledObjects.Add(child.gameObject);
+            }
+        }
+        ScrollDown();
+
+        // wait for write time
+        float writeTime = UnityEngine.Random.Range(writeMessageMinTime, writeMessageMaxTime);
+        yield return new WaitForSeconds(writeTime);
+
+        // restore original message
+        if (textMesh != null)
+        {
+            textMesh.text = messageText;
+        }
+
+        foreach (var disabledObject in disabledObjects)
+        {
+            disabledObject.SetActive(true);
+        }
+
+        SendNextMessage(chatIndex, messageIndex, messageTransform);
+    }
+
+    public IEnumerator ProgressStory(int chatIndex)
+    {
+        var chatTransform = chats[chatIndex].transform;
+        var storyState = StoryStateManager.storyStates[chatIndex];
+        var storyline = chats[chatIndex].storyline;
+        int messageCount = Mathf.Min(chatTransform.childCount, storyline.continuationConditions.Length);
+
+        yield return new WaitForSeconds(messageStartDelay);
+
+        for (int messageIndex = storyState.currentMessageIndex; messageIndex < messageCount; messageIndex++)
+        {
+            Debug.Log($"{storyline.storylineName}: Currently at message {messageIndex}");
+
+            var messageTransform = chats[chatIndex].transform.GetChild(messageIndex);
+            var continuationCondition = storyline.continuationConditions[messageIndex];
+
+            if (selectedChatIndex != chatIndex && messageTransform.name.Contains("Player"))
+            {
+                // wait for player to select chat and respond
+                Debug.Log($"{storyline.storylineName}: waiting for player to select chat and respond...");
+                while (selectedChatIndex != chatIndex)
+                {
+                    yield return new WaitForSeconds(messageStartDelay);
+                }
+            }
+
+            switch (continuationCondition.condition)
+            {
+                case Storyline.ConditionType.None:
+                    // the next message should just be written
+                    Debug.Log($"{storyline.storylineName}: instantly writing next message...");
+                    break;
+                case Storyline.ConditionType.TimeInHours:
+                    // the next message should be written after a certain amount of time has passed
+                    Debug.Log($"{storyline.storylineName}: waiting for continuation time");
+                    var previousMessageTime = DateTime.FromFileTime(storyState.messageTimes[messageIndex - 1]);
+                    int requiredTimePassed = int.Parse(continuationCondition.value);    // should already be in seconds
+                    var nextMessageTime = previousMessageTime.AddSeconds(requiredTimePassed);
+                    var timeDifference = DateTime.Now.Subtract(nextMessageTime);
+
+                    if (timeDifference.Seconds < 0)
+                    {
+                        Debug.Log($"{storyline.storylineName}: waiting for {timeDifference.Seconds} seconds");
+                        yield return new WaitForSeconds(timeDifference.Seconds);
+                    }
+                    break;
+                case Storyline.ConditionType.Item:
+                    throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
+            }
+
+            yield return WriteMessage(chatIndex, messageIndex, messageTransform);
+        }
+
+        Debug.Log($"{storyline.storylineName}: storyline comleted.");
+    }
+
+    public void OnBackToMenu()
+    {
+        SceneTransitionFader.TransitionToScene("StartMenu");
+    }
+
+    public void OnNextNight()
+    {
+        SceneTransitionFader.TransitionToScene("CampusOutside");
     }
 }
