@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public static PlayerController Instance { get; private set; }
 
     Rigidbody2D body;
+    Joystick joystick;
 
     float horizontal;
     float vertical;
@@ -43,6 +44,11 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         body = GetComponent<Rigidbody2D>();
+        joystick = FindAnyObjectByType<Joystick>();
+        if (!Application.isMobilePlatform)
+        {
+            joystick.gameObject.SetActive(false);
+        }
 
         animatorWalkingBoolId = Animator.StringToHash("Walking");
         animatorInteractTriggerId = Animator.StringToHash("Interact");
@@ -55,6 +61,12 @@ public class PlayerController : MonoBehaviour
         // Gives a value between -1 and 1
         horizontal = Input.GetAxisRaw("Horizontal"); // -1 is left
         vertical = Input.GetAxisRaw("Vertical"); // -1 is down
+
+        if (joystick != null)
+        {
+            horizontal += joystick.Horizontal * 1.5f;
+            vertical += joystick.Vertical * 1.5f;
+        }
 
         Vector3 direction = new Vector3(horizontal, vertical, 0);
         direction.SetAngleBasedOnVelocity(bodyTransform);

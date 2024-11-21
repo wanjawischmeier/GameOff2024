@@ -283,7 +283,7 @@ public class InventoryManager : MonoBehaviour
         itemRenderer.sprite = slot.item.sprite;
     }
 
-    public bool DropItem() => DropItem(selectedSlot);
+    public void DropItem() => DropItem(selectedSlot);
 
     public bool DropItem(int slotIndex, bool dropAll = false)
     {

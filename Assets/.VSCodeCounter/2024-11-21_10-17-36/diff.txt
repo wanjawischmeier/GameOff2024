@@ -1,0 +1,149 @@
+Date : 2024-11-21 10:17:36
+Directory : c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Scripts
+Total : 95 files,  -16148 codes, -3008 comments, -3776 blanks, all -22932 lines
+
+Languages
++-----------+------------+------------+------------+------------+------------+
+| language  | files      | code       | comment    | blank      | total      |
++-----------+------------+------------+------------+------------+------------+
+| Markdown  |          1 |        -82 |          0 |        -31 |       -113 |
+| Slang     |          1 |       -130 |        -18 |        -31 |       -179 |
+| JSON      |          3 |       -176 |          0 |         -3 |       -179 |
+| HLSL      |          4 |       -346 |          0 |        -86 |       -432 |
+| ShaderLab |         16 |     -2,780 |          0 |       -713 |     -3,493 |
+| C#        |         70 |    -12,634 |     -2,990 |     -2,912 |    -18,536 |
++-----------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                  |         95 |    -16,148 |     -3,008 |     -3,776 |    -22,932 |
+| ..                                                                                                                                 |         95 |    -16,148 |     -3,008 |     -3,776 |    -22,932 |
+| ..\Graphy - Ultimate Stats Monitor                                                                                                 |         32 |     -4,950 |       -706 |     -1,493 |     -7,149 |
+| ..\Graphy - Ultimate Stats Monitor (Files)                                                                                         |          2 |       -102 |          0 |        -32 |       -134 |
+| ..\Graphy - Ultimate Stats Monitor\Editor                                                                                          |          4 |     -1,217 |        -61 |       -357 |     -1,635 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime                                                                                         |         24 |     -3,328 |       -645 |     -1,030 |     -5,003 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime (Files)                                                                                 |          2 |     -1,239 |       -132 |       -268 |     -1,639 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\Advanced                                                                                |          1 |       -286 |        -19 |        -93 |       -398 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\Audio                                                                                   |          4 |       -529 |       -109 |       -196 |       -834 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\Fps                                                                                     |          4 |       -477 |        -82 |       -198 |       -757 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\Graph                                                                                   |          1 |        -11 |        -18 |         -5 |        -34 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\Ram                                                                                     |          4 |       -412 |        -63 |       -157 |       -632 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\Shader                                                                                  |          1 |        -58 |        -41 |        -22 |       -121 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\UI                                                                                      |          3 |        -85 |        -40 |        -18 |       -143 |
+| ..\Graphy - Ultimate Stats Monitor\Runtime\Util                                                                                    |          4 |       -231 |       -141 |        -73 |       -445 |
+| ..\Graphy - Ultimate Stats Monitor\Shaders                                                                                         |          2 |       -303 |          0 |        -74 |       -377 |
+| ..\LeanTween                                                                                                                       |          9 |     -4,771 |     -2,174 |       -950 |     -7,895 |
+| ..\LeanTween\Editor                                                                                                                |          1 |        -48 |         -2 |         -9 |        -59 |
+| ..\LeanTween\Framework                                                                                                             |          8 |     -4,723 |     -2,172 |       -941 |     -7,836 |
+| ..\NavMeshComponents                                                                                                               |         33 |     -3,318 |       -110 |       -575 |     -4,003 |
+| ..\NavMeshComponents\Editor                                                                                                        |         13 |     -1,561 |        -48 |       -327 |     -1,936 |
+| ..\NavMeshComponents\Scripts                                                                                                       |         20 |     -1,757 |        -62 |       -248 |     -2,067 |
+| ..\Resources                                                                                                                       |          1 |         -1 |          0 |          0 |         -1 |
+| ..\TextMesh Pro                                                                                                                    |         20 |     -3,108 |        -18 |       -758 |     -3,884 |
+| ..\TextMesh Pro\Shaders                                                                                                            |         19 |     -2,953 |        -18 |       -756 |     -3,727 |
+| ..\TextMesh Pro\Sprites                                                                                                            |          1 |       -155 |          0 |         -2 |       -157 |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------+-----------+------------+------------+------------+------------+
+| filename                                                                                                                           | language  | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+-----------+------------+------------+------------+------------+
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Editor\GraphyDebuggerEditor.cs     | C#        |       -443 |        -20 |       -115 |       -578 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Editor\GraphyEditorStyle.cs        | C#        |        -86 |        -12 |        -20 |       -118 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Editor\GraphyManagerEditor.cs      | C#        |       -646 |        -16 |       -211 |       -873 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Editor\GraphyMenuItem.cs           | C#        |        -42 |        -13 |        -11 |        -66 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\README.md                          | Markdown  |        -82 |          0 |        -31 |       -113 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Advanced\G_AdvancedData.cs | C#        |       -286 |        -19 |        -93 |       -398 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Audio\G_AudioGraph.cs      | C#        |       -190 |        -39 |        -65 |       -294 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Audio\G_AudioManager.cs    | C#        |       -167 |        -12 |        -60 |       -239 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Audio\G_AudioMonitor.cs    | C#        |       -118 |        -46 |        -47 |       -211 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Audio\G_AudioText.cs       | C#        |        -54 |        -12 |        -24 |        -90 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Fps\G_FpsGraph.cs          | C#        |       -125 |        -19 |        -53 |       -197 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Fps\G_FpsManager.cs        | C#        |       -181 |        -12 |        -65 |       -258 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Fps\G_FpsMonitor.cs        | C#        |        -85 |        -20 |        -41 |       -146 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Fps\G_FpsText.cs           | C#        |        -86 |        -31 |        -39 |       -156 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Graph\G_Graph.cs           | C#        |        -11 |        -18 |         -5 |        -34 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\GraphyDebugger.cs          | C#        |       -393 |        -78 |        -96 |       -567 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\GraphyManager.cs           | C#        |       -846 |        -54 |       -172 |     -1,072 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Ram\G_RamGraph.cs          | C#        |       -175 |        -24 |        -65 |       -264 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Ram\G_RamManager.cs        | C#        |       -161 |        -12 |        -59 |       -232 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Ram\G_RamMonitor.cs        | C#        |        -21 |        -12 |         -7 |        -40 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Ram\G_RamText.cs           | C#        |        -55 |        -15 |        -26 |        -96 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Shader\G_GraphShader.cs    | C#        |        -58 |        -41 |        -22 |       -121 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\UI\G_SafeArea.cs           | C#        |        -70 |         -4 |        -15 |        -89 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\UI\IModifiableState.cs     | C#        |         -7 |        -18 |         -1 |        -26 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\UI\IMovable.cs             | C#        |         -8 |        -18 |         -2 |        -28 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Util\G_ExtensionMethods.cs | C#        |        -35 |        -21 |         -9 |        -65 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Util\G_FloatString.cs      | C#        |        -89 |        -59 |        -31 |       -179 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Util\G_Intstring.cs        | C#        |        -54 |        -43 |        -20 |       -117 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Runtime\Util\G_Singleton.cs        | C#        |        -53 |        -18 |        -13 |        -84 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Shaders\GraphMobile.shader         | ShaderLab |       -151 |          0 |        -38 |       -189 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\Shaders\GraphStandard.shader       | ShaderLab |       -152 |          0 |        -36 |       -188 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Graphy - Ultimate Stats Monitor\package.json                       | JSON      |        -20 |          0 |         -1 |        -21 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Editor\LeanTweenDocumentationEditor.cs                   | C#        |        -48 |         -2 |         -9 |        -59 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LTDescr.cs                                     | C#        |     -1,657 |       -370 |       -282 |     -2,309 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LTDescrOptional.cs                             | C#        |        -61 |        -15 |        -14 |        -90 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LTSeq.cs                                       | C#        |        -99 |        -79 |        -48 |       -226 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LeanAudio.cs                                   | C#        |       -257 |        -81 |        -81 |       -419 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LeanSmooth.cs                                  | C#        |       -136 |       -186 |        -43 |       -365 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LeanTest.cs                                    | C#        |       -106 |         -1 |        -16 |       -123 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LeanTween.cs                                   | C#        |     -2,283 |     -1,383 |       -450 |     -4,116 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\LeanTween\Framework\LeanTweenExt.cs                                | C#        |       -124 |        -57 |         -7 |       -188 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\AgentOverride2dEditor.cs                  | C#        |        -18 |         -8 |         -4 |        -30 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\CollectSources2dEditor.cs                 | C#        |        -74 |          0 |         -9 |        -83 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\CollectSourcesCache2dEditor.cs            | C#        |        -35 |          0 |         -6 |        -41 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshAgentAttributePropertyDrawer.cs    | C#        |        -15 |         -3 |         -4 |        -22 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshAreaAttributePropertyDrawer.cs     | C#        |        -15 |         -3 |         -3 |        -21 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshAssetManager.cs                    | C#        |       -267 |        -12 |        -56 |       -335 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshComponentsGUIUtility.cs            | C#        |       -226 |         -8 |        -43 |       -277 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshLinkEditor.cs                      | C#        |       -224 |         -1 |        -55 |       -280 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshModifierEditor.cs                  | C#        |        -35 |          0 |        -12 |        -47 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshModifierTilemapEditor.cs           | C#        |       -167 |         -4 |        -28 |       -199 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshModifierVolumeEditor.cs            | C#        |       -110 |          0 |        -28 |       -138 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\NavMeshSurfaceEditor.cs                   | C#        |       -346 |         -9 |        -71 |       -426 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Editor\RootSources2dEditor.cs                    | C#        |        -29 |          0 |         -8 |        -37 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\AgentOverride2d.cs                       | C#        |        -33 |          0 |         -4 |        -37 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\AgentRotate2d.cs                         | C#        |        -13 |          0 |         -3 |        -16 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\AgentRotateSmooth2d.cs                   | C#        |        -14 |          0 |         -3 |        -17 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\CollectSources2d.cs                      | C#        |        -83 |          0 |         -8 |        -91 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\CollectSourcesCache2d.cs                 | C#        |       -105 |          0 |        -11 |       -116 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\CollectTilemapSourcesCache2d.cs          | C#        |        -80 |          0 |         -8 |        -88 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshAgentAttribute.cs                 | C#        |         -8 |         -3 |         -2 |        -13 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshAreaAttribute.cs                  | C#        |         -8 |         -4 |         -2 |        -14 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshBuilder2d.cs                      | C#        |       -355 |         -6 |        -38 |       -399 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshBuilderState.cs                   | C#        |        -86 |        -10 |        -13 |       -109 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshExtension.cs                      | C#        |        -56 |          0 |         -3 |        -59 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshExtensionsProvider.cs             | C#        |        -51 |          0 |         -7 |        -58 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshLink.cs                           | C#        |       -145 |          0 |        -31 |       -176 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshModifier.cs                       | C#        |        -45 |         -2 |        -10 |        -57 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshModifierTilemap.cs                | C#        |        -67 |         -5 |        -12 |        -84 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshModifierVolume.cs                 | C#        |        -45 |         -2 |        -10 |        -57 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\NavMeshSurface.cs                        | C#        |       -453 |        -24 |        -69 |       -546 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\RootSources2d.cs                         | C#        |        -28 |          0 |         -5 |        -33 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\RotateAgentInstantly.cs                  | C#        |        -33 |         -3 |         -4 |        -40 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\NavMeshComponents\Scripts\RotateAgentSmoothly.cs                   | C#        |        -49 |         -3 |         -5 |        -57 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\Resources\BillingMode.json                                         | JSON      |         -1 |          0 |          0 |         -1 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl                             | Slang     |       -130 |        -18 |        -31 |       -179 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader                | ShaderLab |       -115 |          0 |        -31 |       -146 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader                      | ShaderLab |       -126 |          0 |        -30 |       -156 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader                             | ShaderLab |       -115 |          0 |        -31 |       -146 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader                        | ShaderLab |       -257 |          0 |        -70 |       -327 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader                            | ShaderLab |       -257 |          0 |        -65 |       -322 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader                 | ShaderLab |       -208 |          0 |        -51 |       -259 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader                 | ShaderLab |       -201 |          0 |        -52 |       -253 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader                     | ShaderLab |        -86 |          0 |        -21 |       -107 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile-2-Pass.shader                  | ShaderLab |       -305 |          0 |        -85 |       -390 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader                         | ShaderLab |       -200 |          0 |        -51 |       -251 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader                 | ShaderLab |       -112 |          0 |        -28 |       -140 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader                        | ShaderLab |       -127 |          0 |        -33 |       -160 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_SDF.shader                                | ShaderLab |       -257 |          0 |        -70 |       -327 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMP_Sprite.shader                             | ShaderLab |       -111 |          0 |        -21 |       -132 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMPro.cginc                                   | HLSL      |        -65 |          0 |        -20 |        -85 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc                            | HLSL      |       -131 |          0 |        -35 |       -166 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc                        | HLSL      |        -68 |          0 |        -13 |        -81 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc                           | HLSL      |        -82 |          0 |        -18 |       -100 |
+| c:\Users\wanja\Documents\Programmieren\Unity\GameOff2024\Assets\TextMesh Pro\Sprites\EmojiOne.json                                 | JSON      |       -155 |          0 |         -2 |       -157 |
+| Total                                                                                                                              |           |    -16,148 |     -3,008 |     -3,776 |    -22,932 |
++------------------------------------------------------------------------------------------------------------------------------------+-----------+------------+------------+------------+------------+

@@ -13,6 +13,11 @@ public class PauseMenuManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         alpha = image.color.a;
+
+        if (Application.isMobilePlatform)
+        {
+            transform.localScale = Vector3.one * 2;
+        }
     }
 
     private void Update()

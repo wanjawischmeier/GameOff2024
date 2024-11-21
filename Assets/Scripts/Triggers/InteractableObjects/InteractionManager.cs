@@ -1,7 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(PlayerController))]
 public class InteractionManager : MonoBehaviour
@@ -9,6 +9,7 @@ public class InteractionManager : MonoBehaviour
     public Transform interactionOverlayParent;
     public GameObject interactionInfoPanel;
     public TextMeshProUGUI interactionInfoText;
+    public Button buttonA, buttonB;
 
     public static InteractionManager Instance { get; private set; }
 
@@ -31,6 +32,16 @@ public class InteractionManager : MonoBehaviour
 
     private void Start()
     {
+        if (Application.isMobilePlatform)
+        {
+            buttonA.onClick.AddListener(TryInteract);
+        }
+        else
+        {
+            buttonA.gameObject.SetActive(false);
+            buttonB.gameObject.SetActive(false);
+        }
+
         StartCoroutine(SearchForInteractableObjects());
     }
 
@@ -39,9 +50,19 @@ public class InteractionManager : MonoBehaviour
         // trigger interaction when pressing f
         if (Input.GetKeyDown(KeyCode.F) && preferredObject != null)
         {
-            PlayerController.Instance.Interact();
-            preferredObject.Interact(interactionOverlayParent);
+            TryInteract();
         }
+    }
+
+    public void TryInteract()
+    {
+        if (preferredObject == null)
+        {
+            return;
+        }
+
+        PlayerController.Instance.Interact();
+        preferredObject.Interact(interactionOverlayParent);
     }
 
     private IEnumerator SearchForInteractableObjects()

@@ -558,6 +558,7 @@ GameObject:
   - component: {fileID: 5499192224003458112}
   - component: {fileID: 1410041150490674933}
   - component: {fileID: 7046643542040960906}
+  - component: {fileID: 3934859443498160653}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -622,8 +623,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bodyTransform: {fileID: 5429651921713188426}
+  animator: {fileID: 0}
   runSpeed: 4
   interactionRadius: 4
+  isStopped: 0
 --- !u!58 &7046643542040960906
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -660,6 +663,23 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &3934859443498160653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7036488330428174387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eb901b621dc502459bb74e3955c20b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionOverlayParent: {fileID: 0}
+  interactionInfoPanel: {fileID: 0}
+  interactionInfoText: {fileID: 0}
+  buttonA: {fileID: 0}
+  buttonB: {fileID: 0}
 --- !u!1 &7415280562331743716
 GameObject:
   m_ObjectHideFlags: 0
