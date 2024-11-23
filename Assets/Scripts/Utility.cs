@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public static class Utility
@@ -34,5 +35,20 @@ public static class Utility
             y = vector.y + Random.Range(-spreadFactor, spreadFactor),
             z = vector.z + Random.Range(-spreadFactor, spreadFactor),
         };
+    }
+
+    // taken from: https://johnleonardfrench.com/how-to-fade-audio-in-unity-i-tested-every-method-this-ones-the-best/
+    public static IEnumerator StartAudioFade(AudioSource audioSource, float duration, float targetVolume)
+    {
+        float currentTime = 0;
+        float start = audioSource.volume;
+        while (currentTime < duration)
+        {
+            currentTime += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(start, targetVolume, currentTime / duration);
+            yield return null;
+        }
+
+        yield break;
     }
 }

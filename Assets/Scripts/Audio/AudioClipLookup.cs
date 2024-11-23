@@ -1,17 +1,25 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu]
 public class AudioClipLookup : ScriptableObject
 {
+    [Serializable]
+    public struct AudioFile
+    {
+        public AudioClip clip;
+        public float volumeMultiplier;
+    }
+
     [Header("Menu Sounds")]
-    public AudioClip onHover;   // split to not mess up editor layout
-    public AudioClip onClick;
+    public AudioFile onHover;   // split to not mess up editor layout
+    public AudioFile onClick;
 
     [Header("Game Sounds")]
-    public AudioClip playerWalking;
-    public AudioClip playerSprinting, guardWalking, guardSprinting, collectItem, discoverPlayer, catchPlayer, smashWindow, overfloodSink;
+    public AudioFile playerWalking;
+    public AudioFile playerSprinting, guardWalking, guardSprinting, collectItem, discoverPlayer, catchPlayer, smashWindow, overfloodSink;
 
     [Header("Soundtrack")]
-    public AudioClip menuSoundtrack;
-    public AudioClip gameSoundtrack;
+    public AudioFile introSoundtrack;
+    public AudioFile chatWindowSoundtrack, gameSoundtrack;
 }

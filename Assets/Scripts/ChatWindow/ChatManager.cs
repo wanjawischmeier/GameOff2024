@@ -14,7 +14,7 @@ public class ChatManager : MonoBehaviour
     }
 
     public GameObject messagePlayerPrefab, messageGameCharacterPrefab;
-    public GameObject nightRecap, contactBanner;
+    public GameObject nightRecap, contactBanner, messageCreationBox;
     public Transform overviewScrollViewContent, chatScrollViewContent;
     public TextMeshProUGUI contactName;
     public ScrollRect chatScrollRect;
@@ -31,6 +31,11 @@ public class ChatManager : MonoBehaviour
 
     private void Start()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetSoundtrackQueue(AudioManager.Lookup.chatWindowSoundtrack, silenceDuration: 5);
+        }
+
         chatViewport = chatScrollRect.transform.GetChild(0);
         chatScrollRect.verticalNormalizedPosition = 0;
 
@@ -143,8 +148,11 @@ public class ChatManager : MonoBehaviour
     {
         if (selectedChatIndex == -1)
         {
-            nightRecap.SetActive(false);
+            var scrollbarHandle = chatScrollRect.transform.Find("Scrollbar Vertical").GetChild(0).GetChild(0);
+            scrollbarHandle.GetComponent<Image>().enabled = true;   // messy but eh
+            messageCreationBox.SetActive(true);
             contactBanner.SetActive(true);
+            nightRecap.SetActive(false);
         }
         else
         {

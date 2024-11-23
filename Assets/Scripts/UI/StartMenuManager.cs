@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class StartMenuManager : MonoBehaviour
 {
     public GameObject promptPrefab;
+    public RectTransform startMenuTransform, optionsMenuTransform;
     public Button loadButton;
 
     GameObject promptObj;
@@ -48,8 +50,25 @@ public class StartMenuManager : MonoBehaviour
         SceneTransitionFader.TransitionToScene("ChatWindow");
     }
 
-    public void Options()
+    public void ShowOptions()
     {
-        SceneManager.LoadScene("OptionsMenu", LoadSceneMode.Additive);
+        LeanTween.moveX(startMenuTransform, -startMenuTransform.rect.width, SceneTransitionFader.sceneTransitionOutTime).setOnComplete(() =>
+        {
+            optionsMenuTransform.Translate(-startMenuTransform.rect.width, 0, 0);
+            startMenuTransform.gameObject.SetActive(false);
+            optionsMenuTransform.gameObject.SetActive(true);
+            LeanTween.moveX(optionsMenuTransform, 0, SceneTransitionFader.sceneTransitionInTime);
+        });
+    }
+
+    public void HideOptions()
+    {
+        LeanTween.moveX(optionsMenuTransform, -optionsMenuTransform.rect.width, SceneTransitionFader.sceneTransitionOutTime).setOnComplete(() =>
+        {
+            startMenuTransform.Translate(-startMenuTransform.rect.width, 0, 0);
+            startMenuTransform.gameObject.SetActive(true);
+            optionsMenuTransform.gameObject.SetActive(false);
+            LeanTween.moveX(startMenuTransform, 0, SceneTransitionFader.sceneTransitionInTime);
+        });
     }
 }

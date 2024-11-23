@@ -120,7 +120,8 @@ public class InteractionManager : MonoBehaviour
             {
                 // display interaction info panel
                 preferredObject = newPreferredObject;
-                interactionInfoText.text = $"Press [f] to {preferredObject.interactionMessage}.";
+                string interactionKey = Application.isMobilePlatform ? "A" : "[f]";
+                interactionInfoText.text = $"Press {interactionKey} to {preferredObject.interactionMessage}";
                 interactionInfoPanel.SetActive(true);
             }
 

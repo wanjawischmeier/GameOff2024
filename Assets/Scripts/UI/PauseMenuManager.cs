@@ -17,7 +17,10 @@ public class PauseMenuManager : MonoBehaviour
 
         if (Application.isMobilePlatform)
         {
-            pauseMenuButton.transform.localScale = Vector3.one * 2;
+            Debug.Log("Adapting scaling for mobile plattform");
+            pauseMenuButton.transform.localScale = Vector3.one * 1.5f;
+            var rectTransform = (RectTransform)pauseMenuButton.transform;
+            rectTransform.parent.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 540);
         }
     }
 

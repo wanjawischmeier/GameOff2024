@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class OptionsMenuManager : MonoBehaviour
 {
-    public RectTransform frame;
     public Slider fxVolumeSlider, soundtrackVolumeSlider;
 
     private void Start()
@@ -16,39 +14,26 @@ public class OptionsMenuManager : MonoBehaviour
         soundtrackVolumeSlider.onValueChanged.AddListener(ChangeSoundtrackVolume);
         soundtrackVolumeSlider.value = SettingsManager.Settings.soundtrackVolume;
         soundtrackVolumeSlider.maxValue = Settings.maxSoundtrackVolume;
-
-        frame.Translate(-frame.rect.width, 0, 0);
-        LeanTween.moveX(frame, 0, SceneTransitionFader.sceneTransitionOutTime);
     }
 
     private void ApplySettingsChange(bool playSound = false)
     {
-        var audioManagers = FindObjectsByType<MenuAudioManager>(FindObjectsSortMode.None);
-        foreach (var audioManager in audioManagers)
+        var audioManager = FindAnyObjectByType<AudioManager>();
+
+        if (audioManager.fxAudioSource != null)
         {
-            if (audioManager.fxAudioSource != null)
-            {
-                audioManager.fxAudioSource.volume = SettingsManager.Settings.fxVolume;
+            audioManager.fxAudioSource.volume = SettingsManager.Settings.fxVolume;
 
-                if (playSound && audioManager.gameObject.scene == gameObject.scene)
-                {
-                    audioManager.PlayClip(audioManager.lookup.onHover);
-                }
-            }
-
-            if (audioManager.soundtrackAudioSource != null)
+            if (playSound && audioManager.gameObject.scene == gameObject.scene)
             {
-                audioManager.soundtrackAudioSource.volume = SettingsManager.Settings.soundtrackVolume * audioManager.soundtrackVolumeMultiplier;
+                audioManager.PlayClip(audioManager.lookup.onHover);
             }
         }
-    }
 
-    public void GoBack()
-    {
-        LeanTween.moveX(frame, -frame.rect.width, SceneTransitionFader.sceneTransitionOutTime).setOnComplete(() =>
+        if (audioManager.soundtrackAudioSource != null)
         {
-            SceneManager.UnloadSceneAsync("OptionsMenu");
-        });
+            audioManager.soundtrackAudioSource.volume = SettingsManager.Settings.soundtrackVolume * audioManager.currentSoundtrack.volumeMultiplier;
+        }
     }
 
     public void ChangeFXVolume(float volume)

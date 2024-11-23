@@ -25,7 +25,7 @@ public class Prompt : MonoBehaviour
             });
         });
 
-        var menuAudioManager = FindAnyObjectByType<MenuAudioManager>();
+        var menuAudioManager = FindAnyObjectByType<AudioManager>();
         menuAudioManager.AddSelectable(cancel);
         menuAudioManager.AddSelectable(confirm);
 

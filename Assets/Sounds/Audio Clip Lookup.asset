@@ -12,16 +12,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59fa88f7a35e5ee428912530c331840a, type: 3}
   m_Name: Audio Clip Lookup
   m_EditorClassIdentifier: 
-  onHover: {fileID: 8300000, guid: b437868d45903e24f9e58ddc9490af80, type: 3}
-  onClick: {fileID: 8300000, guid: 2576cb657b1ae12469eb00dfdbb6ca8a, type: 3}
-  playerWalking: {fileID: 0}
-  playerSprinting: {fileID: 0}
-  guardWalking: {fileID: 0}
-  guardSprinting: {fileID: 0}
-  collectItem: {fileID: 0}
-  discoverPlayer: {fileID: 0}
-  catchPlayer: {fileID: 0}
-  smashWindow: {fileID: 0}
-  overfloodSink: {fileID: 0}
-  menuSoundtrack: {fileID: 8300000, guid: a78ee3ba34591c5468042e514f28092b, type: 3}
-  gameSoundtrack: {fileID: 0}
+  onHover:
+    clip: {fileID: 8300000, guid: b437868d45903e24f9e58ddc9490af80, type: 3}
+    volumeMultiplier: 1
+  onClick:
+    clip: {fileID: 8300000, guid: 2576cb657b1ae12469eb00dfdbb6ca8a, type: 3}
+    volumeMultiplier: 1
+  playerWalking:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  playerSprinting:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  guardWalking:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  guardSprinting:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  collectItem:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  discoverPlayer:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  catchPlayer:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  smashWindow:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  overfloodSink:
+    clip: {fileID: 0}
+    volumeMultiplier: 0
+  introSoundtrack:
+    clip: {fileID: 8300000, guid: c1d583236175e0f468f977c0f66d6c4b, type: 3}
+    volumeMultiplier: 10
+  chatWindowSoundtrack:
+    clip: {fileID: 8300000, guid: 345231cfa4a2caa46a709d01256af8a8, type: 3}
+    volumeMultiplier: 0.8
+  gameSoundtrack:
+    clip: {fileID: 8300000, guid: bc9d36bed2fcc254c9d840937df78cab, type: 3}
+    volumeMultiplier: 1.5
