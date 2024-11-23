@@ -1131,7 +1131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lookup: {fileID: 11400000, guid: 9d4f684eeeb27eb4d8612d69af97c9fd, type: 2}
-  playSoundtrack: 0
+  soundtrack: {fileID: 8300000, guid: bc9d36bed2fcc254c9d840937df78cab, type: 3}
+  soundtrackVolumeMultiplier: 1
   fxAudioSource: {fileID: 0}
   soundtrackAudioSource: {fileID: 0}
 --- !u!1001 &113092678719813950
@@ -1248,6 +1249,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pause Menu
       objectReference: {fileID: 0}
+    - target: {fileID: 8692256586754360962, guid: 8e971af4af3fc4e4fae31ccc80db4b67, type: 3}
+      propertyPath: pauseMenuButton
+      value: 
+      objectReference: {fileID: 3754061199638098627}
     - target: {fileID: 8847516508190801981, guid: 8e971af4af3fc4e4fae31ccc80db4b67, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class PauseMenuManager : MonoBehaviour
 {
     public RectTransform fill;
+    public Button pauseMenuButton;
     public Image image;
     float alpha;
 
@@ -16,7 +17,7 @@ public class PauseMenuManager : MonoBehaviour
 
         if (Application.isMobilePlatform)
         {
-            transform.localScale = Vector3.one * 2;
+            pauseMenuButton.transform.localScale = Vector3.one * 2;
         }
     }
 

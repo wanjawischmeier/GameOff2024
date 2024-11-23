@@ -6,20 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/CampusOutside.unity
-    guid: e0f3bddf03d7c5b44bc13b722e456ed1
-  - enabled: 1
-    path: Assets/Scenes/StealthLevels/StealthDemo.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
-    path: Assets/Scenes/ChatWindow.unity
-    guid: a6e5e4c230a7ce74fa4d53321ee01265
-  - enabled: 1
     path: Assets/Scenes/Menus/StartMenu.unity
     guid: ea2e360536f29d34297c10e25e086a06
   - enabled: 1
     path: Assets/Scenes/Menus/OptionsMenu.unity
     guid: 2241211735974bb41bf8d34e3ac0593a
+  - enabled: 1
+    path: Assets/Scenes/ChatWindow.unity
+    guid: a6e5e4c230a7ce74fa4d53321ee01265
+  - enabled: 1
+    path: Assets/Scenes/CampusOutside.unity
+    guid: e0f3bddf03d7c5b44bc13b722e456ed1
+  - enabled: 1
+    path: Assets/Scenes/StealthLevels/StealthDemo.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

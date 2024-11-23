@@ -36,7 +36,7 @@ public class InteractionManager : MonoBehaviour
         {
             buttonA.onClick.AddListener(TryInteract);
         }
-        else
+        else if (buttonA != null)
         {
             buttonA.gameObject.SetActive(false);
             buttonB.gameObject.SetActive(false);

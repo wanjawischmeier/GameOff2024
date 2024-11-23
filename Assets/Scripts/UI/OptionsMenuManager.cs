@@ -38,7 +38,7 @@ public class OptionsMenuManager : MonoBehaviour
 
             if (audioManager.soundtrackAudioSource != null)
             {
-                audioManager.soundtrackAudioSource.volume = SettingsManager.Settings.soundtrackVolume;
+                audioManager.soundtrackAudioSource.volume = SettingsManager.Settings.soundtrackVolume * audioManager.soundtrackVolumeMultiplier;
             }
         }
     }

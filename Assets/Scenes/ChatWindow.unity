@@ -6851,7 +6851,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lookup: {fileID: 11400000, guid: 9d4f684eeeb27eb4d8612d69af97c9fd, type: 2}
-  playSoundtrack: 0
+  soundtrack: {fileID: 8300000, guid: 8ad1559d8e2006f49b8b7f29a3810dbd, type: 3}
+  volumeOffset: 0
   fxAudioSource: {fileID: 0}
   soundtrackAudioSource: {fileID: 0}
 --- !u!1 &2117845512

@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class MenuAudioManager : MonoBehaviour
 {
     public AudioClipLookup lookup;
-    public bool playSoundtrack = true;
+    public AudioClip soundtrack;
+    public float soundtrackVolumeMultiplier = 1;
 
     [HideInInspector]
     public AudioSource fxAudioSource, soundtrackAudioSource;
@@ -20,12 +21,12 @@ public class MenuAudioManager : MonoBehaviour
         fxAudioSource.volume = SettingsManager.Settings.fxVolume;
         fxAudioSource.playOnAwake = false;
 
-        if (playSoundtrack)
+        if (soundtrack != null)
         {
             soundtrackAudioSource = gameObject.AddComponent<AudioSource>();
             soundtrackAudioSource.loop = true;
-            soundtrackAudioSource.volume = SettingsManager.Settings.soundtrackVolume;
-            soundtrackAudioSource.clip = lookup.menuSoundtrack;
+            soundtrackAudioSource.volume = SettingsManager.Settings.soundtrackVolume * soundtrackVolumeMultiplier;
+            soundtrackAudioSource.clip = soundtrack;
             soundtrackAudioSource.Play();
         }
 
