@@ -34,6 +34,7 @@ public class StoryStateManager : MonoBehaviour
     {
         storylineParent = (RectTransform)chatManager.chatScrollRect.transform.GetChild(0);
         storylines = FindObjectsByType<Storyline>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Array.Sort(storylines, (item0, item1) => item0.transform.GetSiblingIndex() < item1.transform.GetSiblingIndex() ? -1 : 1);
 
         LoadStoryState();
     }

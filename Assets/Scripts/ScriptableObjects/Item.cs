@@ -8,6 +8,6 @@ public class Item : ScriptableObject
 
     public int itemId
     {
-        get => ItemDatabase.GetItemId(this);
+        get => ItemManager.GetItemId(this);
     }
 }

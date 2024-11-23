@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class ItemDatabase : MonoBehaviour
+public class ItemManager : MonoBehaviour
 {
-    public Item[] items;
+    public ItemDatabase itemDatabase;
 
-    static ItemDatabase instance;
+    static ItemManager instance;
 
     private void Awake()
     {
@@ -21,21 +21,21 @@ public class ItemDatabase : MonoBehaviour
 
     public static Item GetItem(int itemId)
     {
-        if (itemId < 0 || itemId >= instance.items.Length)
+        if (itemId < 0 || itemId >= instance.itemDatabase.items.Length)
         {
             return null;
         }
         else
         {
-            return instance.items[itemId];
+            return instance.itemDatabase.items[itemId];
         }
     }
 
     public static int GetItemId(Item item)
     {
-        for (int itemId = 0; itemId < instance.items.Length; itemId++)
+        for (int itemId = 0; itemId < instance.itemDatabase.items.Length; itemId++)
         {
-            if (item == instance.items[itemId])
+            if (item == instance.itemDatabase.items[itemId])
             {
                 return itemId;
             }

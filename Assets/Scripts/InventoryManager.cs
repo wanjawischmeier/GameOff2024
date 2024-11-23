@@ -19,7 +19,7 @@ public class InventoryManager : MonoBehaviour
 
         public Item item
         {
-            get => ItemDatabase.GetItem(itemId);
+            get => ItemManager.GetItem(itemId);
         }
     }
 
@@ -216,7 +216,7 @@ public class InventoryManager : MonoBehaviour
         slots[selectedSlot] = slot;
 
         var slotImage = GetSlotImage(selectedSlot);
-        var item = ItemDatabase.GetItem(itemId);
+        var item = ItemManager.GetItem(itemId);
         slotImage.sprite = item.sprite;
         slotImage.enabled = true;
 

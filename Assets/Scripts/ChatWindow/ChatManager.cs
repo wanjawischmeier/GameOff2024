@@ -69,7 +69,7 @@ public class ChatManager : MonoBehaviour
             }
 
             StartCoroutine(ProgressStory(chatIndex));
-            UpdateMessagCountBubble(chatIndex);
+            UpdateMessageCountBubble(chatIndex);
         }
     }
 
@@ -127,7 +127,7 @@ public class ChatManager : MonoBehaviour
         return true;
     }
 
-    private void UpdateMessagCountBubble(int chatIndex)
+    private void UpdateMessageCountBubble(int chatIndex)
     {
         var messageCountBubble = chats[chatIndex].messageCountBubble;
         var textMesh = messageCountBubble.GetChild(0).GetComponent<TextMeshProUGUI>();
@@ -164,14 +164,16 @@ public class ChatManager : MonoBehaviour
 
         selectedChatIndex = chatIndex;
 
-        chats[chatIndex].transform.gameObject.SetActive(true);
+        var chatTransform = (RectTransform)chats[chatIndex].transform;
+        chatScrollRect.GetComponent<ScrollRect>().content = chatTransform;
+        chatTransform.gameObject.SetActive(true);
         contactName.text = chats[chatIndex].transform.name;
 
         var overviewItem = overviewScrollViewContent.GetChild(selectedChatIndex);
         overviewItem.GetComponent<Image>().color = selectedChatColor;
 
         StoryStateManager.storyStates[chatIndex].unreadMessages = 0;
-        UpdateMessagCountBubble(chatIndex);
+        UpdateMessageCountBubble(chatIndex);
         StoryStateManager.SaveStoryState();
 
         ScrollDown(true);
@@ -191,7 +193,7 @@ public class ChatManager : MonoBehaviour
         {
             // player hasn't read message yet
             StoryStateManager.storyStates[chatIndex].unreadMessages++;
-            UpdateMessagCountBubble(chatIndex);
+            UpdateMessageCountBubble(chatIndex);
         }
 
         StoryStateManager.SaveStoryState();
@@ -251,7 +253,8 @@ public class ChatManager : MonoBehaviour
 
         yield return new WaitForSeconds(messageStartDelay);
 
-        for (int messageIndex = storyState.currentMessageIndex; messageIndex < messageCount; messageIndex++)
+        int startingMessageIndex = storyState.currentMessageIndex;
+        for (int messageIndex = startingMessageIndex; messageIndex < messageCount; messageIndex++)
         {
             Debug.Log($"{storyline.storylineName}: Currently at message {messageIndex}");
 
@@ -273,6 +276,17 @@ public class ChatManager : MonoBehaviour
                 case Storyline.ConditionType.None:
                     // the next message should just be written
                     Debug.Log($"{storyline.storylineName}: instantly writing next message...");
+                    break;
+                case Storyline.ConditionType.WaitForNextNight:
+                    if (messageIndex != startingMessageIndex)
+                    {
+                        // previous message was just written, wait for next night
+                        Debug.Log($"{storyline.storylineName}: Waiting for next day...");
+                        yield break;
+                    }
+
+                    // last message was written previous night
+                    Debug.Log($"{storyline.storylineName}: Continuing story from previous day...");
                     break;
                 case Storyline.ConditionType.TimeInSeconds:
                     // the next message should be written after a certain amount of time has passed
