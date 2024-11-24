@@ -26,12 +26,14 @@ public class ChatManager : MonoBehaviour
     Transform chatViewport;
     Chat[] chats;
     int selectedChatIndex = -1;
+    List<int> playerLockedChats;
 
-    const float chatScrollDownThreshold = 0.1f;
+    const float refreshTime = 0.02f;
     const float messageStartDelay = 2;
     const float messageInbetweenDelay = 0.1f;
     const float writeMessageMinTime = 0.5f;
     const float writeMessageMaxTime = 4;
+    const float writeCharacterTime = 0.05f;
 
     private void Start()
     {
@@ -55,6 +57,7 @@ public class ChatManager : MonoBehaviour
         chatViewport = chatScrollRect.transform.GetChild(0);
         chatScrollRect.verticalNormalizedPosition = 0;
 
+        playerLockedChats = new List<int>();
         chats = new Chat[chatViewport.childCount];
         for (int chatIndex = 0; chatIndex < chatViewport.childCount; chatIndex++)
         {
@@ -131,18 +134,11 @@ public class ChatManager : MonoBehaviour
         }
     }
 
-    private bool ScrollDown(bool unconditionally = false)
+    private void ScrollDown()
     {
-        if (chatScrollRect.verticalNormalizedPosition >= chatScrollDownThreshold && !unconditionally)
-        {
-            return false;
-        }
-
         // only scroll down further if user is already scrolled down
         UpdateLayout(transform);
         chatScrollRect.verticalNormalizedPosition = 0;
-
-        return true;
     }
 
     private void UpdateMessageCountBubble(int chatIndex)
@@ -204,7 +200,22 @@ public class ChatManager : MonoBehaviour
             EnableMessageLockState(chatIndex, chat.lockText, chat.lockSprite);
         }
 
-        ScrollDown(true);
+        var creationTransform = messageCreationBox.transform.Find("Message").GetChild(0);
+        var creationText = creationTransform.GetComponent<TextMeshProUGUI>();
+        if (playerLockedChats.Contains(chatIndex))
+        {
+            // update message creation text
+            int currentMessageIndex = StoryStateManager.storyStates[chatIndex].currentMessageIndex;
+            var messageTransform = chats[chatIndex].transform.GetChild(currentMessageIndex);
+            var messageTextTransform = messageTransform.Find("Message Content").Find("Message Text (TMP)");
+            creationText.text = messageTextTransform.GetComponent<TextMeshProUGUI>().text;
+        }
+        else
+        {
+            creationText.text = "";
+        }
+
+        ScrollDown();
     }
 
     private void DisableMessageLockState(int chatIndex)
@@ -240,10 +251,11 @@ public class ChatManager : MonoBehaviour
         long messageTime = DateTime.Now.ToFileTime();
         StoryStateManager.storyStates[chatIndex].messageTimes[messageIndex] = messageTime;
         StoryStateManager.storyStates[chatIndex].currentMessageIndex++;
-        ScrollDown();
 
         var dateTransform = messageTransform.Find("Message Content").Find("Date and Time (TMP)");
         dateTransform.GetComponent<TextMeshProUGUI>().text = DateTime.FromFileTime(messageTime).ToString("HH:mm");
+        dateTransform.gameObject.SetActive(false);
+        ScrollDown();
 
         if (selectedChatIndex != chatIndex)
         {
@@ -258,37 +270,65 @@ public class ChatManager : MonoBehaviour
 
     public IEnumerator WriteMessage(int chatIndex, int messageIndex, Transform messageTransform)
     {
-        messageTransform.gameObject.SetActive(true);
         var disabledObjects = new List<GameObject>();
         TextMeshProUGUI textMesh = null;
         string messageText = "";
 
         // hide other elements and display ... in text element
         var contentTransform = messageTransform.Find("Message Content");
-        for (int i = 0; i < contentTransform.childCount; i++)
-        {
-            var child = contentTransform.GetChild(i);
-            if (child.name == "Message Text (TMP)")
-            {
-                textMesh = child.GetComponent<TextMeshProUGUI>();
-                messageText = textMesh.text;
-                textMesh.text = "...";
-            }
-            else
-            {
-                child.gameObject.SetActive(false);
-                disabledObjects.Add(child.gameObject);
-            }
-        }
+
+        var dateTimeTransform = contentTransform.Find("Date and Time (TMP)");
+        dateTimeTransform.gameObject.SetActive(false);
+        disabledObjects.Add(dateTimeTransform.gameObject);
+
+        var messageTextTransform = contentTransform.Find("Message Text (TMP)");
+        textMesh = messageTextTransform.GetComponent<TextMeshProUGUI>();
+        messageText = textMesh.text;
+
+        bool isPlayer = messageTransform.name.Contains("Player");
         ScrollDown();
 
-        // wait for write time
-        float writeTime = UnityEngine.Random.Range(writeMessageMinTime, writeMessageMaxTime);
-        yield return new WaitForSeconds(writeTime);
-
-        // restore original message
-        if (textMesh != null)
+        if (isPlayer)
         {
+            var creationTransform = messageCreationBox.transform.Find("Message").GetChild(0);
+            var creationText = creationTransform.GetComponent<TextMeshProUGUI>();
+
+            for (int characterIndex = 1; characterIndex < messageText.Length; characterIndex++)
+            {
+                creationText.text = messageText[0..characterIndex];
+
+                // try to scroll down every n characters
+                if (characterIndex % 20 == 0)
+                {
+                    ScrollDown();
+                }
+
+                yield return new WaitForSeconds(writeCharacterTime);
+            }
+
+            while (playerLockedChats.Contains(chatIndex))
+            {
+                // wait for player to press send
+                yield return new WaitForSeconds(refreshTime);
+            }
+
+            creationText.text = "";
+
+            // restore original message
+            textMesh.text = messageText;
+            messageTransform.gameObject.SetActive(true);
+        }
+        else
+        {
+            textMesh.text = "...";
+            messageTransform.gameObject.SetActive(true);
+            ScrollDown();
+
+            // wait for write time
+            float writeTime = UnityEngine.Random.Range(writeMessageMinTime, writeMessageMaxTime);
+            yield return new WaitForSeconds(writeTime);
+
+            // restore original message
             textMesh.text = messageText;
         }
 
@@ -300,7 +340,7 @@ public class ChatManager : MonoBehaviour
         SendNextMessage(chatIndex, messageIndex, messageTransform);
     }
 
-    public IEnumerator ProgressStory(int chatIndex)
+    private IEnumerator ProgressStory(int chatIndex)
     {
         var chatTransform = chats[chatIndex].transform;
         var storyState = StoryStateManager.storyStates[chatIndex];
@@ -383,7 +423,13 @@ public class ChatManager : MonoBehaviour
                         EnableMessageLockState(chatIndex, "Locked. Required Item:", item.sprite);
                         yield break;
                     }
+
                     Debug.Log($"{storyline.storylineName}: Player has collected item {item.itemName}. Continuing...");
+                    playerLockedChats.Add(chatIndex);
+                    break;
+                case ConditionType.PressSendButton:
+                    Debug.Log($"{storyline.storylineName}: Waiting for player to press send...");
+                    playerLockedChats.Add(chatIndex);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -396,6 +442,11 @@ public class ChatManager : MonoBehaviour
         }
 
         Debug.Log($"{storyline.storylineName}: storyline comleted.");
+    }
+
+    public void SendCurrentChat()
+    {
+        playerLockedChats.Remove(selectedChatIndex);
     }
 
     public void OnBackToMenu()
