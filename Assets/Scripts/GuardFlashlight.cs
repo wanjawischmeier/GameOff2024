@@ -42,7 +42,10 @@ public class NewMonoBehaviourScript : MonoBehaviour
         switch (guardController.behaviourMode)
         {
             case GuardController.BehaviourMode.GameOver:
-                SceneStateManager.ReloadScene();
+                SceneStateManager.ResetSceneState();
+                SceneStateManager.ResetInventoryState();
+                StoryStateManager.RemoveNewCollectedItems();
+                SceneTransitionFader.TransitionToScene("ChatWindow");
                 break;
             case GuardController.BehaviourMode.Pursue:
                 StartCoroutine(guardController.PursuePlayer());

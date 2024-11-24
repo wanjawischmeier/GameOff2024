@@ -7,7 +7,7 @@ public struct Settings
     public float fxVolume, soundtrackVolume;
 
     public static float maxFxVolume = 1;
-    public static float initialFxVolume = 0.75f;
+    public static float initialFxVolume = 0.25f;
 
     public static float maxSoundtrackVolume = 0.1f;
     public static float initialSoundtrackVolume = 0.05f;

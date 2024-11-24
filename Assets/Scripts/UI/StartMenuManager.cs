@@ -42,6 +42,8 @@ public class StartMenuManager : MonoBehaviour
         }
 
         StoryStateManager.ResetStoryState();
+        SceneStateManager.ResetSceneState();
+        SceneStateManager.ResetInventoryState();
         LoadGame();
     }
 

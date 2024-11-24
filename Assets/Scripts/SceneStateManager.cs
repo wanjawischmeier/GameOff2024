@@ -150,7 +150,7 @@ public class SceneStateManager : MonoBehaviour
                 {
                     guardController.PursuePlayer();
                 }
-                else
+                else if (guardController.agent != null)
                 {
                     guardController.agent.SetDestination(guardSave.target);
                 }

@@ -5,6 +5,7 @@ public class CollisionTigger : MonoBehaviour
     public int targetSceneBuildIndex;
     public GameObject promptPrefab;
     public Vector3 shift;
+    public bool endNight;
 
     GameObject promptObj;
 
@@ -31,6 +32,14 @@ public class CollisionTigger : MonoBehaviour
     private void OnPromptConfirmed()
     {
         Debug.Log($"Confirmed prompt to switch scene to {targetSceneBuildIndex}");
+
+        if (endNight)
+        {
+            StoryStateManager.nightCount++;
+            StoryStateManager.SaveStoryState();
+        }
+
+        Cursor.lockState = CursorLockMode.None;
         SceneStateManager.ResetSceneState();
         SceneTransitionFader.TransitionToScene(targetSceneBuildIndex);
     }

@@ -13,7 +13,17 @@ public class ItemTrigger : InteractableObject
 
     public override void Interact(Transform interactionOverlayParent)
     {
-        InventoryManager.Instance.AddItem(item);
+        if (item.showInInventory)
+        {
+            InventoryManager.Instance.AddItem(item);
+        }
+        else
+        {
+            Debug.Log($"Found story relevant {item.itemName}, adding to game save");
+            StoryStateManager.newCollectedItems.Add(item.itemId);
+            StoryStateManager.SaveStoryState();
+        }
+
         Destroy(gameObject);
     }
 

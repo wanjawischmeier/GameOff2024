@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Storyline;
 
 public class ChatManager : MonoBehaviour
 {
     struct Chat
     {
+        public string lockText;
+        public Sprite lockSprite;
         public Transform transform, messageCountBubble;
         public Storyline storyline;
     }
@@ -26,6 +29,7 @@ public class ChatManager : MonoBehaviour
 
     const float chatScrollDownThreshold = 0.1f;
     const float messageStartDelay = 2;
+    const float messageInbetweenDelay = 0.1f;
     const float writeMessageMinTime = 0.5f;
     const float writeMessageMaxTime = 4;
 
@@ -34,6 +38,18 @@ public class ChatManager : MonoBehaviour
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.SetSoundtrackQueue(AudioManager.Lookup.chatWindowSoundtrack, silenceDuration: 5);
+        }
+
+        if (StoryStateManager.nightCount == 0)
+        {
+            nightRecap.SetActive(false);
+        }
+        else
+        {
+            var nightRecapHeader = nightRecap.transform.Find("Header (TMP)").GetComponent<TextMeshProUGUI>();
+            var nightRecapText = nightRecap.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>();
+            nightRecapHeader.text = $"Completed Night {StoryStateManager.nightCount}";
+            nightRecapText.text = StoryStateManager.RetrieveAndProcessNewItems();
         }
 
         chatViewport = chatScrollRect.transform.GetChild(0);
@@ -45,6 +61,8 @@ public class ChatManager : MonoBehaviour
             var chatTransform = chatViewport.GetChild(chatIndex);
             chats[chatIndex] = new Chat()
             {
+                lockText = "",
+                lockSprite = null,
                 transform = chatTransform,
                 messageCountBubble = overviewScrollViewContent.GetChild(chatIndex).Find("Bubble"),
                 storyline = chatTransform.GetComponent<Storyline>()
@@ -164,10 +182,11 @@ public class ChatManager : MonoBehaviour
 
         selectedChatIndex = chatIndex;
 
-        var chatTransform = (RectTransform)chats[chatIndex].transform;
+        var chat = chats[chatIndex];
+        var chatTransform = (RectTransform)chat.transform;
         chatScrollRect.GetComponent<ScrollRect>().content = chatTransform;
         chatTransform.gameObject.SetActive(true);
-        contactName.text = chats[chatIndex].transform.name;
+        contactName.text = chat.transform.name;
 
         var overviewItem = overviewScrollViewContent.GetChild(selectedChatIndex);
         overviewItem.GetComponent<Image>().color = selectedChatColor;
@@ -176,7 +195,44 @@ public class ChatManager : MonoBehaviour
         UpdateMessageCountBubble(chatIndex);
         StoryStateManager.SaveStoryState();
 
+        if (chat.lockText == "")
+        {
+            DisableMessageLockState(chatIndex);
+        }
+        else
+        {
+            EnableMessageLockState(chatIndex, chat.lockText, chat.lockSprite);
+        }
+
         ScrollDown(true);
+    }
+
+    private void DisableMessageLockState(int chatIndex)
+    {
+        messageCreationBox.transform.Find("Locked").gameObject.SetActive(false);
+        chats[chatIndex].lockText = "";
+    }
+
+    private void EnableMessageLockState(int chatIndex, string lockText, Sprite lockSprite = null)
+    {
+        var lockedTransform = messageCreationBox.transform.Find("Locked");
+        var lockTextTransform = lockedTransform.Find("Text (TMP)");
+        lockTextTransform.GetComponent<TextMeshProUGUI>().text = lockText;
+
+        var requiredItemTransform = lockedTransform.Find("Required Item");
+        if (lockSprite == null)
+        {
+            requiredItemTransform.gameObject.SetActive(false);
+        }
+        else
+        {
+            requiredItemTransform.GetComponent<Image>().sprite = lockSprite;
+            requiredItemTransform.gameObject.SetActive(true);
+        }
+
+        lockedTransform.gameObject.SetActive(true);
+        chats[chatIndex].lockText = lockText;
+        chats[chatIndex].lockSprite = lockSprite;
     }
 
     private void SendNextMessage(int chatIndex, int messageIndex, Transform messageTransform)
@@ -251,15 +307,18 @@ public class ChatManager : MonoBehaviour
         var storyline = chats[chatIndex].storyline;
         int messageCount = Mathf.Min(chatTransform.childCount, storyline.continuationConditions.Length);
 
-        yield return new WaitForSeconds(messageStartDelay);
-
         int startingMessageIndex = storyState.currentMessageIndex;
+        if (startingMessageIndex == 0)
+        {
+            yield return new WaitForSeconds(messageStartDelay);
+        }
+
         for (int messageIndex = startingMessageIndex; messageIndex < messageCount; messageIndex++)
         {
             Debug.Log($"{storyline.storylineName}: Currently at message {messageIndex}");
 
             var messageTransform = chats[chatIndex].transform.GetChild(messageIndex);
-            var continuationCondition = storyline.continuationConditions[messageIndex];
+            var continuation = storyline.continuationConditions[messageIndex];
 
             if (selectedChatIndex != chatIndex && messageTransform.name.Contains("Player"))
             {
@@ -270,29 +329,41 @@ public class ChatManager : MonoBehaviour
                     yield return new WaitForSeconds(messageStartDelay);
                 }
             }
-
-            switch (continuationCondition.condition)
+            
+            switch (continuation.condition)
             {
-                case Storyline.ConditionType.None:
+                case ConditionType.None:
                     // the next message should just be written
                     Debug.Log($"{storyline.storylineName}: instantly writing next message...");
                     break;
-                case Storyline.ConditionType.WaitForNextNight:
-                    if (messageIndex != startingMessageIndex)
+                case ConditionType.WaitForNextNight:
+                    int lockNightIndex = StoryStateManager.storyStates[chatIndex].lockNightIndex;
+                    if (messageIndex != startingMessageIndex || lockNightIndex == -1)
                     {
                         // previous message was just written, wait for next night
-                        Debug.Log($"{storyline.storylineName}: Waiting for next day...");
+                        Debug.Log($"{storyline.storylineName}: Quit. Waiting for next day...");
+                        StoryStateManager.storyStates[chatIndex].lockNightIndex = StoryStateManager.nightCount;
+                        StoryStateManager.SaveStoryState();
+
+                        EnableMessageLockState(chatIndex, "Waiting for next day...");
+                        yield break;
+                    }
+
+                    if (lockNightIndex == StoryStateManager.nightCount)
+                    {
+                        Debug.Log($"{storyline.storylineName}: Quit. Night still hasn't passed. Waiting for next day...");
+                        EnableMessageLockState(chatIndex, "Waiting for next day...");
                         yield break;
                     }
 
                     // last message was written previous night
                     Debug.Log($"{storyline.storylineName}: Continuing story from previous day...");
                     break;
-                case Storyline.ConditionType.TimeInSeconds:
+                case ConditionType.TimeInSeconds:
                     // the next message should be written after a certain amount of time has passed
                     Debug.Log($"{storyline.storylineName}: waiting for continuation time");
                     var previousMessageTime = DateTime.FromFileTime(storyState.messageTimes[messageIndex - 1]);
-                    int requiredTimePassed = int.Parse(continuationCondition.value);    // should already be in seconds
+                    int requiredTimePassed = int.Parse(continuation.value);    // should already be in seconds
                     var nextMessageTime = previousMessageTime.AddSeconds(requiredTimePassed);
                     var timeDifference = DateTime.Now.Subtract(nextMessageTime);
 
@@ -302,8 +373,18 @@ public class ChatManager : MonoBehaviour
                         yield return new WaitForSeconds(timeDifference.Seconds);
                     }
                     break;
-                case Storyline.ConditionType.Item:
-                    throw new NotImplementedException();
+                case ConditionType.Item:
+                    int itemId = int.Parse(continuation.value);
+                    var item = ItemManager.GetItem(itemId);
+                    if (!StoryStateManager.collectedItems.Contains(itemId))
+                    {
+                        // item isn't collected yet
+                        Debug.Log($"{storyline.storylineName}: Quit. Waiting for player to collect item...");
+                        EnableMessageLockState(chatIndex, "Locked. Required Item:", item.sprite);
+                        yield break;
+                    }
+                    Debug.Log($"{storyline.storylineName}: Player has collected item {item.itemName}. Continuing...");
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -311,8 +392,7 @@ public class ChatManager : MonoBehaviour
             yield return WriteMessage(chatIndex, messageIndex, messageTransform);
 
             // wait a little bit before writing next message
-            float writeTime = UnityEngine.Random.Range(writeMessageMinTime, writeMessageMaxTime);
-            yield return new WaitForSeconds(writeTime);
+            yield return new WaitForSeconds(messageInbetweenDelay);
         }
 
         Debug.Log($"{storyline.storylineName}: storyline comleted.");

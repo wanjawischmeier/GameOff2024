@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a7c6b1a253ccb6449467a71062da7c5, type: 3}
-  m_Name: Item Database
+  m_Script: {fileID: 11500000, guid: 618bba0553a14a641b861dda632d3f90, type: 3}
+  m_Name: ElectronicalArchiveTerminalCheckout
   m_EditorClassIdentifier: 
-  items:
-  - {fileID: 11400000, guid: 7364733d6e212da41ab62b1991d4587a, type: 2}
-  - {fileID: 11400000, guid: f57b8fa7a7e822440aefdbc6600d86e7, type: 2}
+  sprite: {fileID: 8119514042478878091, guid: 799bb92ebecf53044b3d43262508c7e9, type: 3}
+  itemName: Electronical Archive Terminal
+  storyItem: 1
+  showInInventory: 0

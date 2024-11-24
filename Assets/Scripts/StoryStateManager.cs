@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 public class StoryStateManager : MonoBehaviour
@@ -7,18 +9,22 @@ public class StoryStateManager : MonoBehaviour
     [Serializable]
     public struct StoryState
     {
-        public int currentMessageIndex, unreadMessages;
+        public int currentMessageIndex, lockNightIndex, unreadMessages;
         public long[] messageTimes;
     }
 
-    // wrapper struct is neccessary for JsonUtitlity to serialize correctly
-    struct StoryStates
+    struct GameState
     {
+        public int nightCount;
+        public int[] newCollectedItems, collectedItems;
         public StoryState[] storyStates;
     }
 
     public ChatManager chatManager;
 
+    public static int nightCount = 0;
+    public static List<int> newCollectedItems = null;
+    public static List<int> collectedItems = null;
     public static StoryState[] storyStates = null;
     static RectTransform storylineParent;
     static Storyline[] storylines;
@@ -32,31 +38,68 @@ public class StoryStateManager : MonoBehaviour
 
     private void Awake()
     {
-        storylineParent = (RectTransform)chatManager.chatScrollRect.transform.GetChild(0);
-        storylines = FindObjectsByType<Storyline>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        Array.Sort(storylines, (item0, item1) => item0.transform.GetSiblingIndex() < item1.transform.GetSiblingIndex() ? -1 : 1);
+        if (chatManager != null)
+        {
+            storylineParent = (RectTransform)chatManager.chatScrollRect.transform.GetChild(0);
+            storylines = FindObjectsByType<Storyline>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            Array.Sort(storylines, (item0, item1) => item0.transform.GetSiblingIndex() < item1.transform.GetSiblingIndex() ? -1 : 1);
+        }
 
-        LoadStoryState();
+        if (!LoadStoryState())
+        {
+            // no story save
+            if (chatManager == null)
+            {
+                // unable to initialize story save in mission scene
+                Debug.LogError("Mission loaded without a story save.");
+                return;
+            }
+
+            SaveStoryState();   // create new empty save
+        }
     }
 
     public static void SaveStoryState()
     {
+        if (storylines == null && (collectedItems == null || storyStates == null))
+        {
+            Debug.LogError("Unable to initialize story save in mission scene");
+            return;
+        }
+
+        if (collectedItems == null)
+        {
+            Debug.Log($"Initializing new collected items state at {storySaveFilePath}.");
+            newCollectedItems = new List<int>();
+            collectedItems = new List<int>();
+        }
+
         if (storyStates == null)
         {
-            Debug.Log($"Creating new story save at {storySaveFilePath}.");
+            Debug.Log($"Initializing new story state at {storySaveFilePath}.");
             storyStates = new StoryState[storylines.Length];
+
             for (int i = 0; i < storylines.Length; i++)
             {
                 storyStates[i] = new StoryState()
                 {
-                    currentMessageIndex = 0, unreadMessages = 0,
+                    currentMessageIndex = 0,
+                    lockNightIndex = -1,
+                    unreadMessages = 0,
                     messageTimes = new long[storylines[i].transform.childCount]
                 };
             }
         }
 
-        StoryStates states = new StoryStates() { storyStates = storyStates };
-        string saveFile = JsonUtility.ToJson(states);
+        var gameState = new GameState()
+        {
+            nightCount = nightCount,
+            newCollectedItems = newCollectedItems.ToArray(),
+            collectedItems = collectedItems.ToArray(),
+            storyStates = storyStates
+        };
+         
+        string saveFile = JsonUtility.ToJson(gameState);
         File.WriteAllText(storySaveFilePath, saveFile);
     }
 
@@ -69,13 +112,15 @@ public class StoryStateManager : MonoBehaviour
         else
         {
             Debug.Log($"No story save found at {storySaveFilePath}.");
-            SaveStoryState();   // create new empty save
             return false;
         }
 
         string saveFile = File.ReadAllText(storySaveFilePath);
-        var states = JsonUtility.FromJson<StoryStates>(saveFile);
-        storyStates = states.storyStates;
+        var gameState = JsonUtility.FromJson<GameState>(saveFile);
+        nightCount = gameState.nightCount;
+        newCollectedItems = new List<int>(gameState.newCollectedItems);
+        collectedItems = new List<int>(gameState.collectedItems);
+        storyStates = gameState.storyStates;
 
         return true;
     }
@@ -91,5 +136,36 @@ public class StoryStateManager : MonoBehaviour
         storyStates = null;
 
         return true;
+    }
+
+    public static void RemoveNewCollectedItems()
+    {
+        newCollectedItems.Clear();
+        SaveStoryState();
+    }
+
+    /// <summary>
+    /// This returns the new items in an appropiate formatting.
+    /// Also marks them as not newly collected.
+    /// </summary>
+    /// <returns></returns>
+    public static string RetrieveAndProcessNewItems()
+    {
+        StringBuilder formattedItems = new StringBuilder();
+
+        for (int i = 0; i < newCollectedItems.Count; i++)
+        {
+            // Retrieve the item's name
+            string itemName = ItemManager.GetItem(newCollectedItems[i]).itemName;
+
+            // Append the formatted string
+            formattedItems.AppendLine($"- Item {i} {itemName}");
+        }
+
+        // mark as not newly collected
+        collectedItems.AddRange(newCollectedItems);
+        RemoveNewCollectedItems();
+
+        return formattedItems.ToString();
     }
 }

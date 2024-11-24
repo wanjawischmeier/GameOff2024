@@ -608,7 +608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bodyTransform: {fileID: 5429651921713188426}
-  animator: {fileID: 0}
+  animator: {fileID: 1350815449828904484}
   runSpeed: 4
   interactionRadius: 4
   isStopped: 0
