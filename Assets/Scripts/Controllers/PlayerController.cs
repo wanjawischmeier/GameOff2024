@@ -45,9 +45,9 @@ public class PlayerController : MonoBehaviour
     {
         body = GetComponent<Rigidbody2D>();
         joystick = FindAnyObjectByType<Joystick>();
-        if (!Application.isMobilePlatform)
+        if (Application.isMobilePlatform)
         {
-            joystick.gameObject.SetActive(false);
+            joystick.gameObject.SetActive(true);
         }
 
         animatorWalkingBoolId = Animator.StringToHash("Walking");

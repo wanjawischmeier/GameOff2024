@@ -33,7 +33,8 @@ public class ChatManager : MonoBehaviour
     const float messageInbetweenDelay = 0.1f;
     const float writeMessageMinTime = 0.5f;
     const float writeMessageMaxTime = 4;
-    const float writeCharacterTime = 0.05f;
+    const float writeCharacterTime = 0.01f;
+    const float animateMessageTime = 0.1f;
 
     private void Start()
     {
@@ -138,7 +139,10 @@ public class ChatManager : MonoBehaviour
     {
         // only scroll down further if user is already scrolled down
         UpdateLayout(transform);
-        chatScrollRect.verticalNormalizedPosition = 0;
+        LeanTween.value(gameObject, (value) =>
+        {
+            chatScrollRect.verticalNormalizedPosition = value;
+        }, chatScrollRect.verticalNormalizedPosition, 0, animateMessageTime);
     }
 
     private void UpdateMessageCountBubble(int chatIndex)
@@ -246,6 +250,13 @@ public class ChatManager : MonoBehaviour
         chats[chatIndex].lockSprite = lockSprite;
     }
 
+    private void AnimateInMessage(RectTransform messageTransform)
+    {
+        messageTransform.localScale = new Vector3(1, 0, 1);
+        messageTransform.gameObject.SetActive(true);
+        LeanTween.scaleY(messageTransform.gameObject, 1, animateMessageTime).setEase(LeanTweenType.easeOutCubic);
+    }
+
     private void SendNextMessage(int chatIndex, int messageIndex, Transform messageTransform)
     {
         long messageTime = DateTime.Now.ToFileTime();
@@ -254,7 +265,7 @@ public class ChatManager : MonoBehaviour
 
         var dateTransform = messageTransform.Find("Message Content").Find("Date and Time (TMP)");
         dateTransform.GetComponent<TextMeshProUGUI>().text = DateTime.FromFileTime(messageTime).ToString("HH:mm");
-        dateTransform.gameObject.SetActive(false);
+        dateTransform.gameObject.SetActive(true);
         ScrollDown();
 
         if (selectedChatIndex != chatIndex)
@@ -268,7 +279,7 @@ public class ChatManager : MonoBehaviour
         Debug.Log($"Wrote message {messageIndex} in chat {chatIndex}");
     }
 
-    public IEnumerator WriteMessage(int chatIndex, int messageIndex, Transform messageTransform)
+    public IEnumerator WriteMessage(int chatIndex, int messageIndex, RectTransform messageTransform)
     {
         var disabledObjects = new List<GameObject>();
         TextMeshProUGUI textMesh = null;
@@ -293,7 +304,7 @@ public class ChatManager : MonoBehaviour
             var creationTransform = messageCreationBox.transform.Find("Message").GetChild(0);
             var creationText = creationTransform.GetComponent<TextMeshProUGUI>();
 
-            for (int characterIndex = 1; characterIndex < messageText.Length; characterIndex++)
+            for (int characterIndex = 1; characterIndex <= messageText.Length; characterIndex++)
             {
                 creationText.text = messageText[0..characterIndex];
 
@@ -316,12 +327,12 @@ public class ChatManager : MonoBehaviour
 
             // restore original message
             textMesh.text = messageText;
-            messageTransform.gameObject.SetActive(true);
+            AnimateInMessage(messageTransform);
         }
         else
         {
             textMesh.text = "...";
-            messageTransform.gameObject.SetActive(true);
+            AnimateInMessage(messageTransform);
             ScrollDown();
 
             // wait for write time
@@ -357,7 +368,7 @@ public class ChatManager : MonoBehaviour
         {
             Debug.Log($"{storyline.storylineName}: Currently at message {messageIndex}");
 
-            var messageTransform = chats[chatIndex].transform.GetChild(messageIndex);
+            var messageTransform = (RectTransform)chats[chatIndex].transform.GetChild(messageIndex);
             var continuation = storyline.continuationConditions[messageIndex];
 
             if (selectedChatIndex != chatIndex && messageTransform.name.Contains("Player"))

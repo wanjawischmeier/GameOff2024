@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ConePlayerDetector : MonoBehaviour
+public class ConePlayerTrigger : MonoBehaviour
 {
     public Transform flashlightBody;
     public GuardController.BehaviourMode behaviourMode;
@@ -13,6 +13,11 @@ public class ConePlayerDetector : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (guardController == null)
+        {
+            return;
+        }
+
         float distance = (PlayerController.Transform.position - guardController.transform.position).magnitude;
         if (!playerCaught && distance <= detectionDistance)
         {
@@ -43,16 +48,17 @@ public class ConePlayerDetector : MonoBehaviour
         switch (behaviourMode)
         {
             case GuardController.BehaviourMode.GameOver:
-                SceneStateManager.ResetSceneState();
-                SceneStateManager.ResetInventoryState();
-                StoryStateManager.RemoveNewCollectedItems();
-                SceneTransitionFader.TransitionToScene("ChatWindow");
+                SceneTransitionFader.ClearStateAndTransitionToChat();
                 break;
             case GuardController.BehaviourMode.Pursue:
-                if (guardController != null)
+                GuardController selectedGuard = guardController;
+                if (selectedGuard == null)
                 {
-                    StartCoroutine(guardController.PursuePlayer());
+                    // alarm closest guard
+                    selectedGuard = GuardController.ClosestToPlayer.GetComponent<GuardController>();
                 }
+
+                StartCoroutine(selectedGuard.PursuePlayer());
                 break;
             default:
                 break;

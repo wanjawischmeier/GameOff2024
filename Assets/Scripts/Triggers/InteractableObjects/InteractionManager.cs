@@ -12,6 +12,7 @@ public class InteractionManager : MonoBehaviour
     public Button buttonA, buttonB;
 
     public static InteractionManager Instance { get; private set; }
+    public static bool disableInteractions = false;
 
     InteractableObject preferredObject = null;
 
@@ -32,14 +33,11 @@ public class InteractionManager : MonoBehaviour
 
     private void Start()
     {
-        if (Application.isMobilePlatform)
+        if (Application.isMobilePlatform && buttonA != null)
         {
             buttonA.onClick.AddListener(TryInteract);
-        }
-        else if (buttonA != null)
-        {
-            buttonA.gameObject.SetActive(false);
-            buttonB.gameObject.SetActive(false);
+            buttonA.gameObject.SetActive(true);
+            buttonB.gameObject.SetActive(true);
         }
 
         StartCoroutine(SearchForInteractableObjects());
@@ -48,7 +46,7 @@ public class InteractionManager : MonoBehaviour
     private void Update()
     {
         // trigger interaction when pressing f
-        if (Input.GetKeyDown(KeyCode.F) && preferredObject != null)
+        if (Input.GetKeyDown(KeyCode.F))
         {
             TryInteract();
         }
@@ -56,7 +54,7 @@ public class InteractionManager : MonoBehaviour
 
     public void TryInteract()
     {
-        if (preferredObject == null)
+        if (preferredObject == null || disableInteractions)
         {
             return;
         }
@@ -73,6 +71,12 @@ public class InteractionManager : MonoBehaviour
         {
             float preferredObjectDistance = -1;
             InteractableObject newPreferredObject = null;
+
+            if (disableInteractions)
+            {
+                interactionInfoPanel.SetActive(false);
+                yield return new WaitForSeconds(searchIntervall);
+            }
 
             for (int i = 0; i < interactionTriggerParent.childCount; i++)
             {
@@ -116,7 +120,7 @@ public class InteractionManager : MonoBehaviour
                     interactionInfoPanel.SetActive(false);
                 }
             }
-            else if (newPreferredObject != preferredObject)
+            else if (newPreferredObject != preferredObject && !disableInteractions)
             {
                 // display interaction info panel
                 preferredObject = newPreferredObject;

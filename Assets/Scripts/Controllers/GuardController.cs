@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class GuardController : MonoBehaviour
@@ -39,6 +40,30 @@ public class GuardController : MonoBehaviour
         }
     }
 
+    public static Transform ClosestToPlayer
+    {
+        get
+        {
+            Vector3 playerPosition = PlayerController.Transform.position;
+            Transform guardTransform, closestGuardTransform = null;
+            float sqMagnitude, closestSqMagnitude = -1;
+
+            for (int guardIndex = 0; guardIndex < BodyTransform.childCount; guardIndex++)
+            {
+                guardTransform = BodyTransform.GetChild(guardIndex);
+                sqMagnitude = (guardTransform.position - playerPosition).sqrMagnitude;
+
+                if (closestSqMagnitude == -1 || sqMagnitude < closestSqMagnitude)
+                {
+                    closestSqMagnitude = sqMagnitude;
+                    closestGuardTransform = guardTransform;
+                }
+            }
+
+            return closestGuardTransform;
+        }
+    }
+
     public static Transform BodyTransform { get; private set; }
 
     Transform[] waypoints;
@@ -56,7 +81,10 @@ public class GuardController : MonoBehaviour
 
     private void Awake()
     {
-        BodyTransform = transform.parent;
+        if (BodyTransform == null)
+        {
+            BodyTransform = transform.parent;
+        }
     }
 
     private void Start()
@@ -145,6 +173,7 @@ public class GuardController : MonoBehaviour
         rotationSpeed = -1;
 
         Transform target = PlayerController.Transform;
+        InteractionManager.disableInteractions = true;
 
         while ((transform.position - target.position).magnitude > pursuitCatchDistance)
         {
@@ -157,8 +186,6 @@ public class GuardController : MonoBehaviour
         }
 
         // player has been caught
-        SceneStateManager.ResetSceneState();
-        SceneStateManager.ResetInventoryState();
-        SceneTransitionFader.TransitionToScene("CampusOutside");
+        SceneTransitionFader.ClearStateAndTransitionToChat();
     }   
 }

@@ -22,8 +22,6 @@ public class GuardDisturbance : MonoBehaviour
         {
             ProcessTilemapClick();
         }
-
-
     }
 
     private void ProcessTilemapClick()
@@ -43,7 +41,7 @@ public class GuardDisturbance : MonoBehaviour
             switch (hit.collider.name)
             {
                 case "Sink":
-                    Transform guard = GetClosestGuard(disruptionPosition);
+                    Transform guard = GuardController.ClosestToPlayer;
                     guard.GetComponent<GuardController>().Disrupt(disruptionPosition, sinkDisruptionTime);
                     break;
 
@@ -51,29 +49,5 @@ public class GuardDisturbance : MonoBehaviour
                     break;
             }
         }
-    }
-
-
-    private Transform GetClosestGuard(Vector3 position)
-    {
-        Transform guard;
-        Transform closestGuard = guards[0];
-
-        float sqMagnitude = (closestGuard.position - position).sqrMagnitude;
-        float closestSqMagnitude = sqMagnitude;
-
-        for (int i = 1; i < guards.Length; i++)
-        {
-            guard = guards[i];
-            sqMagnitude = (guard.position - position).sqrMagnitude;
-
-            if (sqMagnitude < closestSqMagnitude)
-            {
-                closestSqMagnitude = sqMagnitude;
-                closestGuard = guard;
-            }
-        }
-
-        return closestGuard;
     }
 }

@@ -64,4 +64,14 @@ public class SceneTransitionFader : MonoBehaviour
     public static void TransitionToScene(int sceneBuildIndex) => TransitionToScene("", sceneBuildIndex);
 
     public static void TransitionToScene(string sceneName) => TransitionToScene(sceneName, -1);
+
+    public static void ClearStateAndTransitionToChat()
+    {
+        SceneStateManager.ResetSceneState();
+        SceneStateManager.ResetInventoryState();
+        StoryStateManager.RemoveNewCollectedItems();
+
+        Cursor.lockState = CursorLockMode.None;
+        TransitionToScene("ChatWindow", -1);
+    }
 }
