@@ -1,9 +1,7 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class GuardController : MonoBehaviour
@@ -75,9 +73,12 @@ public class GuardController : MonoBehaviour
     [HideInInspector]
     public int waypointDirection = 1;
     [HideInInspector]
-    public float currentWaypointTime = 0;
+    public float currentWaypointTime = -1;
+
+    GameObject toDestroyOponWaypointCompletion = null;
 
     const float pursuitTargetUpdateTime = 0.01f;
+    const float reactionTime = 0.5f;
 
     private void Awake()
     {
@@ -93,6 +94,11 @@ public class GuardController : MonoBehaviour
         agent.updateRotation = false;
         agent.updateUpAxis = false;
 
+        if (route == null)
+        {
+            return;
+        }
+
         waypoints = new Transform[route.childCount];
         for (int childIndex = 0; childIndex < waypoints.Length; childIndex++)
         {
@@ -102,6 +108,12 @@ public class GuardController : MonoBehaviour
 
     private void Update()
     {
+        if (currentWaypointTime == -1 || agent.speed == sprintSpeed)
+        {
+            // no waypoint or currently in pursuit
+            return;
+        }
+
         // move to next waypoint if enough time has passed
         if (agent.remainingDistance < agent.radius + waypointTolerance)
         {
@@ -114,12 +126,26 @@ public class GuardController : MonoBehaviour
                 currentWaypointTime = Mathf.Max(0, currentWaypointTime - Time.deltaTime);
             }
         }
+    }
 
+    private void FixedUpdate()
+    {
         agent.velocity.SetAngleBasedOnVelocity(bodyTransform, rotationSpeed);
     }
 
     private void MoveToNextWaypoint()
     {
+        if (waypoints == null)
+        {
+            currentWaypointTime = -1;
+            return;
+        }
+
+        if (toDestroyOponWaypointCompletion != null)
+        {
+            Destroy(toDestroyOponWaypointCompletion);
+        }
+
         // next waypoint
         switch (waypointMode)
         {
@@ -160,21 +186,18 @@ public class GuardController : MonoBehaviour
         agent.SetDestination(waypoints[waypointIndex].position);
     }
 
-    public void Disrupt(Vector3 disruptionPosition, float disruptionTime)
+    private IEnumerator MoveToTarget(Vector3 target)
     {
-        agent.SetDestination(disruptionPosition);
-        currentWaypointTime = disruptionTime;
-        agent.speed = sprintSpeed;
+        agent.SetDestination(target);
+
+        while ((transform.position - target).magnitude > pursuitCatchDistance)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 
-    public IEnumerator PursuePlayer()
+    private IEnumerator TrackTarget(Transform target)
     {
-        agent.speed = sprintSpeed;
-        rotationSpeed = -1;
-
-        Transform target = PlayerController.Transform;
-        InteractionManager.disableInteractions = true;
-
         while ((transform.position - target.position).magnitude > pursuitCatchDistance)
         {
             if (enabled)
@@ -184,8 +207,49 @@ public class GuardController : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    public void Disrupt(Vector3 disruptionPosition, float disruptionTime, GameObject toDestroy = null)
+    {
+        toDestroyOponWaypointCompletion = toDestroy;
+        agent.SetDestination(disruptionPosition);
+        currentWaypointTime = disruptionTime;
+        agent.speed = sprintSpeed;
+    }
+
+    public IEnumerator DisruptItem(GameObject item, float disruptionTime)
+    {
+        Debug.Log($"Disrupted by {item}");
+        yield return new WaitForSeconds(reactionTime);
+
+        var originalPosition = transform.position;
+        var originalRotation = transform.eulerAngles;
+        agent.speed = sprintSpeed;
+
+        yield return TrackTarget(item.transform);
+
+        yield return new WaitForSeconds(disruptionTime);
+        Destroy(item);
+        yield return new WaitForSeconds(disruptionTime);
+
+        agent.speed = moveSpeed;
+
+        if (waypoints == null)
+        {
+            yield return MoveToTarget(originalPosition);
+            LeanTween.rotate(gameObject, originalRotation, 0.1f);
+        }
+    }
+
+    public IEnumerator PursuePlayer()
+    {
+        agent.speed = sprintSpeed;
+        rotationSpeed = -1;
+
+        InteractionManager.disableInteractions = true;
+        yield return TrackTarget(PlayerController.Transform);
 
         // player has been caught
         SceneTransitionFader.ClearStateAndTransitionToChat();
-    }   
+    }
 }

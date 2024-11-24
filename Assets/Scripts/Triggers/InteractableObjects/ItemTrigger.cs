@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class ItemTrigger : InteractableObject
 {
-    public override float interactionRadius { get; } = 1f;
+    public override float interactionRadius { get; } = 1;
 
     public override string interactionMessage { get => $"pick up the {item.itemName}"; }
 
     [HideInInspector]
     public bool isDropped = false;
     public Item item;
+
+    public const float interactionTime = 1;
 
     public override void Interact(Transform interactionOverlayParent)
     {

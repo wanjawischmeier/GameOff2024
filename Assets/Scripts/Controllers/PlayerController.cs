@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            InventoryManager.Instance.DropItem();
+            InventoryManager.Instance.TryThrowItem();
         }
     }
 

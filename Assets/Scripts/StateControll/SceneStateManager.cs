@@ -87,7 +87,7 @@ public class SceneStateManager : MonoBehaviour
                     currentWaypointTime = guardController.currentWaypointTime
                 };
 
-                if (guardController.rotationSpeed != -1)
+                if (guardController.agent.speed == guardController.moveSpeed)
                 {
                     // guard isn't in pursuit of the player
                     guard.target = guardController.agent.destination;

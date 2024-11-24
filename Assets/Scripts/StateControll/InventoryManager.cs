@@ -23,11 +23,12 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    public GameObject itemDroppedPrefab;
+    public GameObject itemDroppedPrefab, itemThrownPrefab;
     public Transform content;
     public TextMeshProUGUI itemName;
     public Color defaultColor, selectedColor;
     public float selectedScaleFactor = 1.1f;
+    public float throwingForce = 2;
 
     public static InventoryManager Instance { get; private set; }
 
@@ -283,18 +284,42 @@ public class InventoryManager : MonoBehaviour
         itemRenderer.sprite = slot.item.sprite;
     }
 
+    private GameObject InstantiateThrownItem(InventorySlot slot)
+    {
+        var playerRigidbody = PlayerController.Transform.GetComponent<Rigidbody2D>();
+        var itemPosition = PlayerController.Transform.position.RandomlySpreadVector(itemDropPositionSpread);
+        var itemRotation = PlayerController.Instance.bodyTransform.eulerAngles.RandomlySpreadVector(itemDropRotationSpread);
+        itemRotation.z += 90;    // rotate item by 90 degrees
+
+        var itemObj = Instantiate(itemThrownPrefab,
+            PlayerController.Transform.position, Quaternion.Euler(itemRotation),
+            StaticObjects.InteractionTriggerParent
+        );
+        itemObj.name = $"{slot.item.name} Trigger";
+        var itemRigidbody = itemObj.GetComponent<Rigidbody2D>();
+        itemRigidbody.linearVelocity = PlayerController.Transform.Find("Body").right * throwingForce;
+
+        var itemTrigger = itemObj.GetComponent<ItemTrigger>();
+        itemTrigger.item = slot.item;
+
+        var itemRenderer = itemObj.GetComponent<SpriteRenderer>();
+        itemRenderer.sprite = slot.item.sprite;
+
+        return itemObj;
+    }
+
     public void DropItem() => DropItem(selectedSlot);
 
     public bool DropItem(int slotIndex, bool dropAll = false)
     {
-        if (slots[slotIndex].itemId == -1)
+        var slot = slots[slotIndex];
+        if (slot.itemId == -1)
         {
             // no item in the slot
             return false;
         }
 
         // spread items around the player
-        var slot = slots[slotIndex];
         if (dropAll)
         {
             for (int i = 0; i < slot.count; i++)
@@ -308,6 +333,31 @@ public class InventoryManager : MonoBehaviour
         }
 
         PlayerController.Instance.Interact();
+        return RemoveItems(slotIndex);
+    }
+
+    public void TryThrowItem() => TryThrowItem(selectedSlot);
+
+    public bool TryThrowItem(int slotIndex)
+    {
+        var slot = slots[slotIndex];
+        if (slot.itemId == -1)
+        {
+            // no item in the slot
+            return false;
+        }
+
+        if (!ItemManager.GetItem(slot.itemId).throwableDistraction)
+        {
+            return false;
+        }
+
+        // spread items around the player
+        var itemObj = InstantiateThrownItem(slot);
+
+        PlayerController.Instance.Interact();
+        var guard = GuardController.ClosestToPlayer.GetComponent<GuardController>();
+        StartCoroutine(guard.DisruptItem(itemObj, ItemTrigger.interactionTime));
         return RemoveItems(slotIndex);
     }
 }

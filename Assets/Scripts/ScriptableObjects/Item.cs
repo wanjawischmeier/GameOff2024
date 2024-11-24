@@ -13,6 +13,7 @@ public class Item : ScriptableObject
     /// otherwise the item will be added to the game state collected items immediately
     /// </summary>
     public bool showInInventory = true;
+    public bool throwableDistraction = false;
 
     public int itemId
     {

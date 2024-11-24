@@ -10,6 +10,7 @@ public class StaticObjects : MonoBehaviour
 
     public static Transform InteractionTriggerParent { get; private set; }
 
+    // TODO: remove this redundancy for GuardController.BodyTransform
     public static Transform[] Guards { get; private set; }
 
     private void Awake()
