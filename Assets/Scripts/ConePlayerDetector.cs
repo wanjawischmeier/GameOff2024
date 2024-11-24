@@ -1,8 +1,9 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class ConePlayerDetector : MonoBehaviour
 {
     public Transform flashlightBody;
+    public GuardController.BehaviourMode behaviourMode;
     public GuardController guardController;
     public LayerMask playerLayerMask;
     public float detectionDistance = 0.5f;
@@ -39,7 +40,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
     private void PlayerSeen()
     {
-        switch (guardController.behaviourMode)
+        switch (behaviourMode)
         {
             case GuardController.BehaviourMode.GameOver:
                 SceneStateManager.ResetSceneState();
@@ -48,7 +49,10 @@ public class NewMonoBehaviourScript : MonoBehaviour
                 SceneTransitionFader.TransitionToScene("ChatWindow");
                 break;
             case GuardController.BehaviourMode.Pursue:
-                StartCoroutine(guardController.PursuePlayer());
+                if (guardController != null)
+                {
+                    StartCoroutine(guardController.PursuePlayer());
+                }
                 break;
             default:
                 break;

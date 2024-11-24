@@ -55,6 +55,11 @@ public class AudioManager : MonoBehaviour
         ScanSelectables();
     }
 
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void AddEventTriggerClipEntry(EventTriggerType type, AudioFile clip)
     {
         var entry = new EventTrigger.Entry { eventID = type };
