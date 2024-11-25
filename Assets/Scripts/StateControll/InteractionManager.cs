@@ -12,7 +12,7 @@ public class InteractionManager : MonoBehaviour
     public Button buttonA, buttonB;
 
     public static InteractionManager Instance { get; private set; }
-    public static bool disableInteractions = false;
+    public bool disableInteractions = false;
 
     InteractableObject preferredObject = null;
 
@@ -36,6 +36,7 @@ public class InteractionManager : MonoBehaviour
         if (Application.isMobilePlatform && buttonA != null)
         {
             buttonA.onClick.AddListener(TryInteract);
+            buttonB.onClick.AddListener(InventoryManager.Instance.TryThrowItem);
             buttonA.gameObject.SetActive(true);
             buttonB.gameObject.SetActive(true);
         }

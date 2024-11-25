@@ -246,7 +246,7 @@ public class GuardController : MonoBehaviour
         agent.speed = sprintSpeed;
         rotationSpeed = -1;
 
-        InteractionManager.disableInteractions = true;
+        InteractionManager.Instance.disableInteractions = true;
         yield return TrackTarget(PlayerController.Transform);
 
         // player has been caught

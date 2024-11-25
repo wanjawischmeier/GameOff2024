@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         body = GetComponent<Rigidbody2D>();
-        joystick = FindAnyObjectByType<Joystick>();
+        joystick = FindAnyObjectByType<Joystick>(FindObjectsInactive.Include);
         if (Application.isMobilePlatform)
         {
             joystick.gameObject.SetActive(true);
