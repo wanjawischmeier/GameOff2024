@@ -168,7 +168,7 @@ MonoBehaviour:
   waypointMode: 0
   behaviourMode: 0
   waypointTolerance: 0.5
-  waypointTime: 2
+  waypointTime: 1
   moveSpeed: 1
   sprintSpeed: 2
   rotationSpeed: 4
@@ -587,7 +587,7 @@ MonoBehaviour:
   guardController: {fileID: 7958299028419165654}
   playerLayerMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 55
   detectionDistance: 2
 --- !u!1 &6668611025019279591
 GameObject:

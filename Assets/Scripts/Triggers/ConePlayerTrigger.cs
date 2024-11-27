@@ -29,10 +29,19 @@ public class ConePlayerTrigger : MonoBehaviour
     private void OnTriggerStay2D(Collider2D collision) // das OnTriggerStay2D statt OnTriggerEnter2D is a bissl sad :/
     {
         // the player is inside the guard's cone of vision
-        Vector2 origin = flashlightBody.transform.position.StripZ();
+        Vector2 origin;
+        if (flashlightBody == null)
+        {
+            origin = transform.parent.parent.position.StripZ();
+        }
+        else
+        {
+            origin = flashlightBody.transform.position.StripZ();
+        }
         Vector3 rayDirection = PlayerController.Transform.position.StripZ() - origin;
 
-        if (Physics2D.Raycast(origin, rayDirection, rayDirection.magnitude, playerLayerMask) || playerCaught)
+        var hit = Physics2D.Raycast(origin, rayDirection, rayDirection.magnitude, playerLayerMask);
+        if (hit || playerCaught)
         {
             // there's an object occluding the guard's view of the player
             return;

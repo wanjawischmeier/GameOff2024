@@ -117,6 +117,12 @@ public class StoryStateManager : MonoBehaviour
 
         string saveFile = File.ReadAllText(storySaveFilePath);
         var gameState = JsonUtility.FromJson<GameState>(saveFile);
+        if (gameState.newCollectedItems == null)
+        {
+            Debug.LogWarning($"Deleting corrupt save file at {storySaveFilePath}.");
+            ResetStoryState();
+            return false;
+        }
         nightCount = gameState.nightCount;
         newCollectedItems = new List<int>(gameState.newCollectedItems);
         collectedItems = new List<int>(gameState.collectedItems);
@@ -140,6 +146,12 @@ public class StoryStateManager : MonoBehaviour
 
     public static void RemoveNewCollectedItems()
     {
+        if (newCollectedItems == null)
+        {
+            Debug.LogError("Called <RemoveNewCollectedItems> without a valid story save loaded.");
+            return;
+        }
+
         newCollectedItems.Clear();
         SaveStoryState();
     }
