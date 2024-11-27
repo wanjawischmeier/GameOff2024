@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 5219176622765109696}
   - component: {fileID: 7958299028419165654}
   - component: {fileID: 1476864978354659937}
+  - component: {fileID: 1343239677750360725}
   m_Layer: 6
   m_Name: Guard
   m_TagString: Untagged
@@ -172,6 +173,10 @@ MonoBehaviour:
   sprintSpeed: 2
   rotationSpeed: 4
   pursuitCatchDistance: 1
+  agent: {fileID: 0}
+  waypointIndex: 0
+  waypointDirection: 1
+  currentWaypointTime: 0
 --- !u!195 &1476864978354659937
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -194,6 +199,42 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!58 &1343239677750360725
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3265191907149006662}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 72
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.5
 --- !u!1 &3295938622434455098
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,6 +583,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flashlightBody: {fileID: 8896933921337539695}
+  behaviourMode: 0
   guardController: {fileID: 7958299028419165654}
   playerLayerMask:
     serializedVersion: 2

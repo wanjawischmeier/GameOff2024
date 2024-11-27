@@ -19,7 +19,7 @@ public abstract class InteractableObject : MonoBehaviour
         }
     }
 
-    public void DisruptGuard(float interactionTime, GameObject overlay, Transform interactionOverlayParent)
+    public void DisruptGuard(float interactionTime)
     {
         Transform guard = GetClosestGuard(transform.position);
         if (guard == null)
@@ -28,7 +28,6 @@ public abstract class InteractableObject : MonoBehaviour
         }
 
         Destroy(gameObject);
-        Instantiate(overlay, interactionOverlayParent);
 
         var guardController = guard.GetComponent<GuardController>();
         guardController.Disrupt(transform.position, interactionTime);

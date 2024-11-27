@@ -68,14 +68,13 @@ public class GuardController : MonoBehaviour
 
     [HideInInspector]
     public NavMeshAgent agent;
-    [HideInInspector]
     public int waypointIndex = 0;
     [HideInInspector]
     public int waypointDirection = 1;
-    [HideInInspector]
     public float currentWaypointTime = -1;
 
     GameObject toDestroyOponWaypointCompletion = null;
+    bool inPursuit = false;
 
     const float pursuitTargetUpdateTime = 0.01f;
     const float reactionTime = 0.5f;
@@ -108,14 +107,14 @@ public class GuardController : MonoBehaviour
 
     private void Update()
     {
-        if (currentWaypointTime == -1 || agent.speed == sprintSpeed)
+        if (currentWaypointTime == -1 || inPursuit)
         {
             // no waypoint or currently in pursuit
             return;
         }
 
         // move to next waypoint if enough time has passed
-        if (agent.remainingDistance < agent.radius + waypointTolerance)
+        if ((transform.position - agent.destination).magnitude < agent.radius + waypointTolerance)
         {
             if (currentWaypointTime == 0)
             {
@@ -183,6 +182,7 @@ public class GuardController : MonoBehaviour
         
         currentWaypointTime = waypointTime;
         agent.speed = moveSpeed;
+        inPursuit = false;
         agent.SetDestination(waypoints[waypointIndex].position);
     }
 
@@ -215,6 +215,7 @@ public class GuardController : MonoBehaviour
         agent.SetDestination(disruptionPosition);
         currentWaypointTime = disruptionTime;
         agent.speed = sprintSpeed;
+        inPursuit = true;
     }
 
     public IEnumerator DisruptItem(GameObject item, float disruptionTime)
@@ -245,6 +246,7 @@ public class GuardController : MonoBehaviour
     {
         agent.speed = sprintSpeed;
         rotationSpeed = -1;
+        inPursuit = true;
 
         InteractionManager.Instance.disableInteractions = true;
         yield return TrackTarget(PlayerController.Transform);

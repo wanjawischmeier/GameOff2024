@@ -11,6 +11,7 @@ public class SinkTrigger : InteractableObject
 
     public override void Interact(Transform interactionOverlayParent)
     {
-        DisruptGuard(interactionTime, overflowingSinkPrefab, interactionOverlayParent);
+        Instantiate(overflowingSinkPrefab, transform.position, transform.rotation, interactionOverlayParent);
+        DisruptGuard(interactionTime);
     }
 }

@@ -11,6 +11,8 @@ public class WindowTrigger : InteractableObject
 
     public override void Interact(Transform interactionOverlayParent)
     {
-        DisruptGuard(interactionTime, brokenWindowPrefab, interactionOverlayParent);
+        var obj = Instantiate(brokenWindowPrefab, Vector3.zero, transform.rotation, interactionOverlayParent);
+        obj.transform.position = transform.position;
+        DisruptGuard(interactionTime);
     }
 }
