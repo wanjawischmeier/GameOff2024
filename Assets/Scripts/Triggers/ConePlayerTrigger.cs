@@ -18,7 +18,7 @@ public class ConePlayerTrigger : MonoBehaviour
             return;
         }
 
-        float distance = (PlayerController.Transform.position - guardController.transform.position).magnitude;
+        float distance = Vector3.Distance(PlayerController.Transform.position, guardController.transform.position);
         if (!playerCaught && distance <= detectionDistance)
         {
             // player is just too close and guard notices without looking

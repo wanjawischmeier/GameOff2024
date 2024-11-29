@@ -62,6 +62,18 @@ public class GuardController : MonoBehaviour
         }
     }
 
+    public static float ClosestPlayerRemainingDistance
+    {
+        // very hacky, too tired to handle this properly
+        get
+        {
+            var guardTransform = ClosestToPlayer;
+            var conePlayerTrigger = guardTransform.GetComponentInChildren<ConePlayerTrigger>();
+            float distance = Vector3.Distance(PlayerController.Transform.position, guardTransform.position);
+            return distance - conePlayerTrigger.detectionDistance;
+        }
+    }
+
     public static Transform BodyTransform { get; private set; }
 
     Transform[] waypoints;
@@ -97,7 +109,7 @@ public class GuardController : MonoBehaviour
         {
             return;
         }
-
+        
         waypoints = new Transform[route.childCount];
         for (int childIndex = 0; childIndex < waypoints.Length; childIndex++)
         {
