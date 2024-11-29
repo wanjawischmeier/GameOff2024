@@ -814,6 +814,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   remainingDistanceThreshold: 2
   dangerLevelDecrementStep: 0.75
+  background: {fileID: 1074837942079908026}
+  fill: {fileID: 2873802517026594075}
 --- !u!1 &6182126999518191831
 GameObject:
   m_ObjectHideFlags: 0

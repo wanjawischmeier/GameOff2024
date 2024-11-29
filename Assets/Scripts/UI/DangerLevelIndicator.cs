@@ -5,9 +5,13 @@ public class DangerLevelIndicator : MonoBehaviour
 {
     public float remainingDistanceThreshold = 2;
     public float dangerLevelDecrementStep = 0.75f;
+    public RectTransform background, fill;
 
     Slider slider;
     float dangerLevel = 0;
+
+    static float sliderFadeinDuration = 0.05f;
+    static float sliderFadeoutDuration = 0.1f;
 
     private void Start()
     {
@@ -23,9 +27,24 @@ public class DangerLevelIndicator : MonoBehaviour
         }
         else
         {
-            dangerLevel -= dangerLevelDecrementStep * Time.deltaTime;
+            dangerLevel = Mathf.Max(0, dangerLevel - dangerLevelDecrementStep * Time.deltaTime);
         }
 
         slider.value = dangerLevel;
+
+        if (dangerLevel == 0)
+        {
+            LeanTween.cancel(fill);
+            LeanTween.cancel(background);
+            LeanTween.alpha(fill, 0, sliderFadeoutDuration);
+            LeanTween.alpha(background, 0, sliderFadeoutDuration);
+        }
+        else
+        {
+            LeanTween.cancel(fill);
+            LeanTween.cancel(background);
+            LeanTween.alpha(fill, 1, sliderFadeinDuration);
+            LeanTween.alpha(background, 1, sliderFadeinDuration);
+        }
     }
 }
