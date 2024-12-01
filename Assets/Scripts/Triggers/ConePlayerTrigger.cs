@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class ConePlayerTrigger : MonoBehaviour
@@ -9,7 +10,10 @@ public class ConePlayerTrigger : MonoBehaviour
     public float detectionDistance = 0.5f;
 
     // messy due to OnTriggerStay2D
-    bool playerCaught = false;
+    public static bool playerCaught = false;
+
+    const float transitionTime = 0.2f;
+    const int transitionSteps = 10;
 
     private void FixedUpdate()
     {
@@ -49,6 +53,21 @@ public class ConePlayerTrigger : MonoBehaviour
 
         // player has been caught
         playerCaught = true;
+        StartCoroutine(TransitionToPlayerSeen());
+    }
+
+    private IEnumerator TransitionToPlayerSeen()
+    {
+        DangerLevelIndicator.Instance.ShowSlider();
+        yield return new WaitForSeconds(DangerLevelIndicator.sliderFadeinDuration);
+
+        int dangerLevel = Mathf.RoundToInt(DangerLevelIndicator.Instance.slider.value);
+        for (; dangerLevel <= transitionSteps; dangerLevel++)
+        {
+            DangerLevelIndicator.Instance.slider.value = (float)dangerLevel / transitionSteps;
+            yield return new WaitForSeconds(transitionTime / transitionSteps);
+        }
+
         PlayerSeen();
     }
 

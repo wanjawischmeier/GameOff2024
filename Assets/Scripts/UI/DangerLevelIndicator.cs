@@ -7,11 +7,26 @@ public class DangerLevelIndicator : MonoBehaviour
     public float dangerLevelDecrementStep = 0.75f;
     public RectTransform background, fill;
 
-    Slider slider;
+    [HideInInspector]
+    public Slider slider;
     float dangerLevel = 0;
 
-    static float sliderFadeinDuration = 0.05f;
-    static float sliderFadeoutDuration = 0.1f;
+    public const float sliderFadeinDuration = 0.05f;
+    public const float sliderFadeoutDuration = 0.1f;
+
+    public static DangerLevelIndicator Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     private void Start()
     {
@@ -30,21 +45,34 @@ public class DangerLevelIndicator : MonoBehaviour
             dangerLevel = Mathf.Max(0, dangerLevel - dangerLevelDecrementStep * Time.deltaTime);
         }
 
-        slider.value = dangerLevel;
+        if (!ConePlayerTrigger.playerCaught)
+        {
+            slider.value = dangerLevel;
+        }
 
         if (dangerLevel == 0)
         {
-            LeanTween.cancel(fill);
-            LeanTween.cancel(background);
-            LeanTween.alpha(fill, 0, sliderFadeoutDuration);
-            LeanTween.alpha(background, 0, sliderFadeoutDuration);
+            HideSlider();
         }
         else
         {
-            LeanTween.cancel(fill);
-            LeanTween.cancel(background);
-            LeanTween.alpha(fill, 1, sliderFadeinDuration);
-            LeanTween.alpha(background, 1, sliderFadeinDuration);
+            ShowSlider();
         }
+    }
+
+    public void ShowSlider()
+    {
+        LeanTween.cancel(fill);
+        LeanTween.cancel(background);
+        LeanTween.alpha(fill, 1, sliderFadeinDuration);
+        LeanTween.alpha(background, 1, sliderFadeinDuration);
+    }
+
+    public void HideSlider()
+    {
+        LeanTween.cancel(fill);
+        LeanTween.cancel(background);
+        LeanTween.alpha(fill, 0, sliderFadeoutDuration);
+        LeanTween.alpha(background, 0, sliderFadeoutDuration);
     }
 }
