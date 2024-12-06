@@ -35,7 +35,14 @@ public class DangerLevelIndicator : MonoBehaviour
 
     private void Update()
     {
-        float currentDangerLevel = (remainingDistanceThreshold - GuardController.ClosestPlayerRemainingDistance) / remainingDistanceThreshold;
+        var guard = GuardController.ClosestToPlayer;
+        float currentDangerLevel = (remainingDistanceThreshold - ClosestToPlayerRemainingDistance(guard.transform)) / remainingDistanceThreshold;
+        if (!guard.conePlayerTrigger.IsPlayerInLineOfSight())
+        {
+            // no danger 'cause an object is between guard and player
+            currentDangerLevel = 0;
+        }
+
         if (currentDangerLevel >= dangerLevel)
         {
             dangerLevel = currentDangerLevel;
@@ -58,6 +65,14 @@ public class DangerLevelIndicator : MonoBehaviour
         {
             ShowSlider();
         }
+    }
+
+    private float ClosestToPlayerRemainingDistance(Transform guardTransform)
+    {
+        // very hacky, too tired to handle this properly
+        var conePlayerTrigger = guardTransform.GetComponentInChildren<ConePlayerTrigger>();
+        float distance = Vector3.Distance(PlayerController.Transform.position, guardTransform.position);
+        return distance - conePlayerTrigger.detectionDistance;
     }
 
     public void ShowSlider()

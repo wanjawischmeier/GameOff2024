@@ -23,7 +23,7 @@ public class ConePlayerTrigger : MonoBehaviour
         }
 
         float distance = Vector3.Distance(PlayerController.Transform.position, guardController.transform.position);
-        if (!playerCaught && distance <= detectionDistance)
+        if (!playerCaught && distance <= detectionDistance && !IsPlayerInLineOfSight())
         {
             // player is just too close and guard notices without looking
             PlayerSeen();
@@ -31,6 +31,19 @@ public class ConePlayerTrigger : MonoBehaviour
     }
 
     private void OnTriggerStay2D(Collider2D collision) // das OnTriggerStay2D statt OnTriggerEnter2D is a bissl sad :/
+    {
+        if (!IsPlayerInLineOfSight() || playerCaught)
+        {
+            // there's an object occluding the guard's view of the player
+            return;
+        }
+
+        // player has been caught
+        playerCaught = true;
+        StartCoroutine(TransitionToPlayerSeen());
+    }
+
+    public bool IsPlayerInLineOfSight()
     {
         // the player is inside the guard's cone of vision
         Vector2 origin;
@@ -45,15 +58,7 @@ public class ConePlayerTrigger : MonoBehaviour
         Vector3 rayDirection = PlayerController.Transform.position.StripZ() - origin;
 
         var hit = Physics2D.Raycast(origin, rayDirection, rayDirection.magnitude, playerLayerMask);
-        if (hit || playerCaught)
-        {
-            // there's an object occluding the guard's view of the player
-            return;
-        }
-
-        // player has been caught
-        playerCaught = true;
-        StartCoroutine(TransitionToPlayerSeen());
+        return hit;
     }
 
     private IEnumerator TransitionToPlayerSeen()
@@ -83,7 +88,7 @@ public class ConePlayerTrigger : MonoBehaviour
                 if (selectedGuard == null)
                 {
                     // alarm closest guard
-                    selectedGuard = GuardController.ClosestToPlayer.GetComponent<GuardController>();
+                    selectedGuard = GuardController.ClosestToPlayer;
                 }
 
                 StartCoroutine(selectedGuard.PursuePlayer());

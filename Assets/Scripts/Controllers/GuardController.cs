@@ -38,7 +38,7 @@ public class GuardController : MonoBehaviour
         }
     }
 
-    public static Transform ClosestToPlayer
+    public static GuardController ClosestToPlayer
     {
         get
         {
@@ -58,19 +58,7 @@ public class GuardController : MonoBehaviour
                 }
             }
 
-            return closestGuardTransform;
-        }
-    }
-
-    public static float ClosestPlayerRemainingDistance
-    {
-        // very hacky, too tired to handle this properly
-        get
-        {
-            var guardTransform = ClosestToPlayer;
-            var conePlayerTrigger = guardTransform.GetComponentInChildren<ConePlayerTrigger>();
-            float distance = Vector3.Distance(PlayerController.Transform.position, guardTransform.position);
-            return distance - conePlayerTrigger.detectionDistance;
+            return closestGuardTransform.GetComponent<GuardController>();
         }
     }
 
@@ -78,6 +66,8 @@ public class GuardController : MonoBehaviour
 
     Transform[] waypoints;
 
+    [HideInInspector]
+    public ConePlayerTrigger conePlayerTrigger;
     [HideInInspector]
     public NavMeshAgent agent;
     public int waypointIndex = 0;
@@ -104,6 +94,7 @@ public class GuardController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+        conePlayerTrigger = GetComponentInChildren<ConePlayerTrigger>();
 
         if (route == null)
         {

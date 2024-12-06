@@ -356,7 +356,7 @@ public class InventoryManager : MonoBehaviour
         var itemObj = InstantiateThrownItem(slot);
 
         PlayerController.Instance.Interact();
-        var guard = GuardController.ClosestToPlayer.GetComponent<GuardController>();
+        var guard = GuardController.ClosestToPlayer;
         StartCoroutine(guard.DisruptItem(itemObj, ItemTrigger.interactionTime));
         return RemoveItems(slotIndex);
     }

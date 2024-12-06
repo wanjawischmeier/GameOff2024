@@ -41,8 +41,8 @@ public class GuardDisturbance : MonoBehaviour
             switch (hit.collider.name)
             {
                 case "Sink":
-                    Transform guard = GuardController.ClosestToPlayer;
-                    guard.GetComponent<GuardController>().Disrupt(disruptionPosition, sinkDisruptionTime);
+                    Transform guardTransform = GuardController.ClosestToPlayer.transform;
+                    guardTransform.GetComponent<GuardController>().Disrupt(disruptionPosition, sinkDisruptionTime);
                     break;
 
                 default:
