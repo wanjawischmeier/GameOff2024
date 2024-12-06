@@ -14,6 +14,7 @@ public class Item : ScriptableObject
     /// </summary>
     public bool showInInventory = true;
     public bool throwableDistraction = false;
+    public int distractionTime = 1;
 
     public int itemId
     {

@@ -12,6 +12,8 @@ public class ConePlayerTrigger : MonoBehaviour
     // messy due to OnTriggerStay2D
     public static bool playerCaught = false;
 
+    public bool IsPlayerInLineOfSight { get; private set; }
+
     const float transitionTime = 0.2f;
     const int transitionSteps = 10;
 
@@ -22,29 +24,6 @@ public class ConePlayerTrigger : MonoBehaviour
             return;
         }
 
-        float distance = Vector3.Distance(PlayerController.Transform.position, guardController.transform.position);
-        if (!playerCaught && distance <= detectionDistance && !IsPlayerInLineOfSight())
-        {
-            // player is just too close and guard notices without looking
-            PlayerSeen();
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision) // das OnTriggerStay2D statt OnTriggerEnter2D is a bissl sad :/
-    {
-        if (!IsPlayerInLineOfSight() || playerCaught)
-        {
-            // there's an object occluding the guard's view of the player
-            return;
-        }
-
-        // player has been caught
-        playerCaught = true;
-        StartCoroutine(TransitionToPlayerSeen());
-    }
-
-    public bool IsPlayerInLineOfSight()
-    {
         // the player is inside the guard's cone of vision
         Vector2 origin;
         if (flashlightBody == null)
@@ -58,7 +37,44 @@ public class ConePlayerTrigger : MonoBehaviour
         Vector3 rayDirection = PlayerController.Transform.position.StripZ() - origin;
 
         var hit = Physics2D.Raycast(origin, rayDirection, rayDirection.magnitude, playerLayerMask);
-        return hit;
+        IsPlayerInLineOfSight = !hit;
+
+        float distance = Vector3.Distance(PlayerController.Transform.position, guardController.transform.position);
+        if (!playerCaught && distance <= detectionDistance && IsPlayerInLineOfSight)
+        {
+            // player is just too close and guard notices without looking
+            PlayerSeen();
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (GuardController.ClosestToPlayer != guardController)
+        {
+            return;
+        }
+
+        Gizmos.color = IsPlayerInLineOfSight ? Color.red : Color.green;
+        Vector3 pointA = flashlightBody.transform.position;
+        Vector3 pointB = PlayerController.Transform.position;
+        Gizmos.DrawWireSphere(pointA, 0.05f);
+        Gizmos.DrawWireSphere(pointB, 0.05f);
+        Gizmos.DrawLine(pointA, pointB);
+    }
+#endif
+
+    private void OnTriggerStay2D(Collider2D collision) // das OnTriggerStay2D statt OnTriggerEnter2D is a bissl sad :/
+    {
+        if (!IsPlayerInLineOfSight || playerCaught)
+        {
+            // there's an object occluding the guard's view of the player
+            return;
+        }
+
+        // player has been caught
+        playerCaught = true;
+        StartCoroutine(TransitionToPlayerSeen());
     }
 
     private IEnumerator TransitionToPlayerSeen()

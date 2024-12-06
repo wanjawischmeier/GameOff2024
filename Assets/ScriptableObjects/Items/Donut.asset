@@ -17,3 +17,4 @@ MonoBehaviour:
   storyItem: 0
   showInInventory: 1
   throwableDistraction: 1
+  distractionTime: 2

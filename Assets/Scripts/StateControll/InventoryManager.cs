@@ -284,7 +284,7 @@ public class InventoryManager : MonoBehaviour
         itemRenderer.sprite = slot.item.sprite;
     }
 
-    private GameObject InstantiateThrownItem(InventorySlot slot)
+    private GameObject InstantiateThrownItem(InventorySlot slot, out ItemTrigger itemTrigger)
     {
         var playerRigidbody = PlayerController.Transform.GetComponent<Rigidbody2D>();
         var itemPosition = PlayerController.Transform.position.RandomlySpreadVector(itemDropPositionSpread);
@@ -299,7 +299,7 @@ public class InventoryManager : MonoBehaviour
         var itemRigidbody = itemObj.GetComponent<Rigidbody2D>();
         itemRigidbody.linearVelocity = PlayerController.Transform.Find("Body").right * throwingForce;
 
-        var itemTrigger = itemObj.GetComponent<ItemTrigger>();
+        itemTrigger = itemObj.GetComponent<ItemTrigger>();
         itemTrigger.item = slot.item;
 
         var itemRenderer = itemObj.GetComponent<SpriteRenderer>();
@@ -347,17 +347,18 @@ public class InventoryManager : MonoBehaviour
             return false;
         }
 
-        if (!ItemManager.GetItem(slot.itemId).throwableDistraction)
+        var item = ItemManager.GetItem(slot.itemId);
+        if (!item.throwableDistraction)
         {
             return false;
         }
 
         // spread items around the player
-        var itemObj = InstantiateThrownItem(slot);
+        var itemObj = InstantiateThrownItem(slot, out ItemTrigger itemTrigger);
 
         PlayerController.Instance.Interact();
         var guard = GuardController.ClosestToPlayer;
-        StartCoroutine(guard.DisruptItem(itemObj, ItemTrigger.interactionTime));
+        StartCoroutine(guard.DisruptItem(itemObj, item.distractionTime));
         return RemoveItems(slotIndex);
     }
 }

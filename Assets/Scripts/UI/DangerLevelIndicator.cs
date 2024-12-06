@@ -37,7 +37,7 @@ public class DangerLevelIndicator : MonoBehaviour
     {
         var guard = GuardController.ClosestToPlayer;
         float currentDangerLevel = (remainingDistanceThreshold - ClosestToPlayerRemainingDistance(guard.transform)) / remainingDistanceThreshold;
-        if (!guard.conePlayerTrigger.IsPlayerInLineOfSight())
+        if (!guard.conePlayerTrigger.IsPlayerInLineOfSight)
         {
             // no danger 'cause an object is between guard and player
             currentDangerLevel = 0;

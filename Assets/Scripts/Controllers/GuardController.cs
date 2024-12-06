@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class GuardController : MonoBehaviour
@@ -18,6 +18,7 @@ public class GuardController : MonoBehaviour
 
     public Transform route;
     public Transform bodyTransform;
+    public Transform distractionTimeIndicator;
     public PolygonCollider2D flashlightConeCollider;
     public WaypointMode waypointMode;
     public BehaviourMode behaviourMode = BehaviourMode.GameOver;
@@ -65,6 +66,7 @@ public class GuardController : MonoBehaviour
     public static Transform BodyTransform { get; private set; }
 
     Transform[] waypoints;
+    Image distractionTimeLoadingBar;
 
     [HideInInspector]
     public ConePlayerTrigger conePlayerTrigger;
@@ -95,6 +97,7 @@ public class GuardController : MonoBehaviour
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         conePlayerTrigger = GetComponentInChildren<ConePlayerTrigger>();
+        distractionTimeLoadingBar = distractionTimeIndicator.GetChild(0).GetComponent<Image>();
 
         if (route == null)
         {
@@ -223,7 +226,7 @@ public class GuardController : MonoBehaviour
 
     public IEnumerator DisruptItem(GameObject item, float disruptionTime)
     {
-        Debug.Log($"Disrupted by {item}");
+        Debug.Log($"Disrupted by {item} for {disruptionTime}s");
         yield return new WaitForSeconds(reactionTime);
 
         var originalPosition = transform.position;
@@ -232,10 +235,17 @@ public class GuardController : MonoBehaviour
 
         yield return TrackTarget(item.transform);
 
-        yield return new WaitForSeconds(disruptionTime);
-        Destroy(item);
+        distractionTimeIndicator.gameObject.SetActive(true);
+        LeanTween.value(distractionTimeLoadingBar.gameObject, (value) =>
+        {
+            distractionTimeLoadingBar.fillAmount = value;
+        }, 1, 0, disruptionTime).setOnComplete(() =>
+        {
+            distractionTimeIndicator.gameObject.SetActive(false);
+        });
         yield return new WaitForSeconds(disruptionTime);
 
+        Destroy(item);
         agent.speed = moveSpeed;
 
         if (waypoints == null)

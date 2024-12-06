@@ -11,8 +11,6 @@ public class ItemTrigger : InteractableObject
     public bool isDropped = false;
     public Item item;
 
-    public const float interactionTime = 1;
-
     public override void Interact(Transform interactionOverlayParent)
     {
         if (item.showInInventory)
